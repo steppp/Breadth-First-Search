@@ -15,5 +15,4 @@ public class VisualNode<T extends Comparable<T>> extends Node<T> {
 	
 	// indice del nodo
 	int index;
-
 }
