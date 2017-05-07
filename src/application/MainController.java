@@ -23,7 +23,7 @@ public class MainController {
 		Singleton s = Singleton.getInstance();
 		
 		if (!s.graphLoaded) {
-			
+			this.drawCircle(index, xPos, yPos);
 		}
 	}
 	
