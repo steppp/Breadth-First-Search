@@ -1,6 +1,7 @@
 package singleton;
 
 import model.graphs.*;
+import model.node.visual.CoordinateNode;
 
 public class Singleton {
 
@@ -9,6 +10,8 @@ public class Singleton {
 	protected Singleton() {
 		// TODO: - Verificare la correttezza dopo l'introduzione di nuove funzionalità
 		this.graphLoaded = this.isAnimating = false;
+		
+		this.currentGraph = null;
 	}
 	
 	/**
@@ -23,9 +26,21 @@ public class Singleton {
 	}
 	
 	// --------- OTHER DATA ------------
+	public final double NODE_RADIUS = 20.0;
+	
+	
 	public boolean graphLoaded;
 	public boolean isAnimating;
 	
 	// TODO: Trovare un modo per creare una variabile che contenga il grafo caricato, il problema è il tipo dei nodi del grafo
 	// che non può essere stabilito a priori (creare un'interfaccia GraphInsertable?)
+	Graph<CoordinateNode> currentGraph;
+	
+	public Graph<CoordinateNode> getCurrentGraph() {
+		return currentGraph;
+	}
+	
+	public void setCurrentGraph(Graph<CoordinateNode> newGraph) {
+		currentGraph = newGraph;
+	}
 }

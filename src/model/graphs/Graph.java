@@ -16,12 +16,14 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
     }
 
     @Override
-    public void insertNode(Node<T> u) {
+    public boolean insertNode(Node<T> u) {
 
         if (!this.vertexes.containsKey(u)) {
             this.vertexes.put(u, new LinkedList<>());
+            return true;
         }
 
+        return false;
     }
 
     @Override
@@ -31,9 +33,13 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
 
     @Override
     // NOTA: Assumiamo che u e v esistano nel grafo
-    public void insertEdge(Node<T> u, Node<T> v) {
-        if (this.vertexes.containsKey(u) && this.vertexes.containsKey(v))
+    public boolean insertEdge(Node<T> u, Node<T> v) {
+        if (this.vertexes.containsKey(u) && this.vertexes.containsKey(v)) {
             this.vertexes.get(u).add(v);
+            return true;
+        }
+        
+        return false;
     }
 
     @Override
@@ -78,5 +84,18 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
     // serve per riuscire a costruire il disegno del grafico
     protected HashMap<Node<T>, LinkedList<Node<T>>> getVertexes() {
     	return new HashMap<Node<T>, LinkedList<Node<T>>>(this.vertexes);
+    }
+    
+    
+    public Node<T> getMaxKey() {
+    	
+    	try {
+    		// ritorna la chiave con il valore massimo
+    		Node<T> maxKey = Collections.max(this.vertexes.keySet());
+    		return maxKey;
+    	} catch (NoSuchElementException nse) {
+    		// se scatta un'eccezione (la collezione è vuota) si ritorna un valore di default
+    		return null;
+    	}
     }
 }
