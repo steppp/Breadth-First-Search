@@ -1,7 +1,6 @@
 package application;
 
 import java.io.File;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -10,6 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
@@ -19,6 +19,9 @@ import model.node.visual.CoordinateNode;
 import singleton.Singleton;
 
 public class MainController {
+	
+	static CoordinateNode currentNode = null;
+	static CoordinateNode sourceNode = null;
 	
 	@FXML
 	private Pane graphPane;
@@ -53,12 +56,16 @@ public class MainController {
 			// inserisco il nuovo nodo nel grafo
 			s.getCurrentGraph().insertNode(new Node<CoordinateNode>(new CoordinateNode(index, xPos, yPos)));
 			
-			s.getCurrentGraph().print();
+			// s.getCurrentGraph().print();
 		}
 	}
 	
 	
 	private void drawNode(Integer index, double xPos, double yPos) {
+		
+		// se currentNode non è null vuol dire che mi trovo gia su un nodo, quindi non faccio nulla
+		if (MainController.currentNode != null) return;
+		
 		double radius = Singleton.getInstance().NODE_RADIUS;
 		
 		Circle c = this.createCircle();
@@ -69,6 +76,23 @@ public class MainController {
 		sp.setLayoutY(yPos - radius);
 		
 		sp.getChildren().addAll(c, t);
+		
+		sp.setOnMouseEntered((MouseEvent e) -> {
+			
+			// TODO: Risolvere il bug
+			// -------- BUG ----------
+			// non viene rilevato l'evento se è già in corso l'evento "mousePressed" del pannello
+			
+			MainController.currentNode = new CoordinateNode(index, xPos, yPos);
+			System.out.println("Entering node " + index);
+			System.out.println(currentNode);
+		});
+		
+		sp.setOnMouseExited((MouseEvent e) -> {
+			MainController.currentNode = null;
+			System.out.println("Exiting node " + index);
+			System.out.println(currentNode);
+		});
 		
 		this.graphPane.getChildren().add(sp);
 	}
@@ -101,6 +125,7 @@ public class MainController {
 	}
 	
 	
+	// http://stackoverflow.com/questions/17437411/how-to-put-a-text-into-a-circle-object-to-display-it-from-circles-center
 	private void centerText(Text t) {
 		double radius = Singleton.getInstance().NODE_RADIUS;
 		
@@ -130,4 +155,67 @@ public class MainController {
 				new FileChooser.ExtensionFilter("All files", "*.*"),
 				new FileChooser.ExtensionFilter("JSON", "*.json"));
 	}
+	
+	
+    @FXML
+    void handleMousePressed_GraphPane(MouseEvent event) {
+    	System.out.println(MainController.currentNode);
+    	if (MainController.currentNode != null) {
+    		// iniziare a disegnare la linea
+    		
+    		MainController.sourceNode = MainController.currentNode;
+			System.out.println("Source node " + sourceNode.getIndex());
+    	}
+    }
+
+    @FXML
+    void handleMouseReleased_GraphPane(MouseEvent event) {
+    	System.out.println(MainController.currentNode);
+    	if (MainController.currentNode != null) {
+    		
+    		CoordinateNode target = MainController.currentNode, source = MainController.sourceNode;
+    		
+			System.out.println("Target node " + target.getIndex());
+			
+    		Double radius = Singleton.getInstance().NODE_RADIUS;
+
+    		Line edge = new Line(source.getxPos() + radius, source.getyPos() + radius, target.getxPos() + radius, target.getyPos() + radius);
+    		edge.setStroke(Color.BLACK);
+    		edge.setStrokeWidth(3);
+    		
+    		graphPane.getChildren().add(edge);
+    		
+    		MainController.sourceNode = null;
+    	}
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
