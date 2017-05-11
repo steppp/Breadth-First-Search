@@ -78,9 +78,8 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
 		
 		Set<Node<T>> nodeSet = new TreeSet<Node<T>>() ;
 		
-		if (!this.vertexes.isEmpty()) {
+		if (!this.vertexes.isEmpty())
 			nodeSet = this.vertexes.keySet() ;
-		}
 		
 		return nodeSet;
 	}
