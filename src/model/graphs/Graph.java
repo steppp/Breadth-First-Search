@@ -29,20 +29,19 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
     @Override
 	//TODO: cancellare u
 	public void deleteNode(Node<T> u) {
-		
-		//cancello gli archi uscenti da u
-		if (this.vertexes.containsKey(u)) {
-			this.vertexes.get(u).clear() ;
+	    //cancello gli archi uscenti da u
+	    if (this.vertexes.containsKey(u)) {
+		    this.vertexes.get(u).clear() ;
 			
-			//cancello gli archi incidenti in u
-			for (Node<T> n : this.vertexes.keySet()) {
-				
-				if (this.vertexes.get(n).contains(u))
-					this.vertexes.get(n).remove(u) ;
-							
-			}
+		    //cancello gli archi incidenti in u
+		    for (Node<T> n : this.vertexes.keySet()) {
+			    
+			    if (this.vertexes.get(n).contains(u))
+				    this.vertexes.get(n).remove(u) ;
+		    
+		    }
 			
-		}
+	     }
 		
 	}
 
