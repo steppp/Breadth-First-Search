@@ -27,9 +27,24 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
     }
 
     @Override
-    public void deleteNode(Node<T> u) {
-        // TODO: completare, cancellare il nodo e tutti gli archi adiacenti e incidenti
-    }
+	//TODO: cancellare u
+	public void deleteNode(Node<T> u) {
+		
+		//cancello gli archi uscenti da u
+		if (this.vertexes.containsKey(u)) {
+			this.vertexes.get(u).clear() ;
+			
+			//cancello gli archi incidenti in u
+			for (Node<T> n : this.vertexes.keySet()) {
+				
+				if (this.vertexes.get(n).contains(u))
+					this.vertexes.get(n).remove(u) ;
+							
+			}
+			
+		}
+		
+	}
 
     @Override
     // NOTA: Assumiamo che u e v esistano nel grafo
@@ -60,9 +75,16 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
     }
 
     @Override
-    public Set<Node<T>> V() {
-        return null;
-    }
+	public Set<Node<T>> V() {
+		
+		Set<Node<T>> nodeSet = new TreeSet<Node<T>>() ;
+		
+		if (!this.vertexes.isEmpty()) {
+			nodeSet = this.vertexes.keySet() ;
+		}
+		
+		return nodeSet;
+	}
 
     @Override
     public void print() {
