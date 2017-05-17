@@ -3,12 +3,14 @@ package model.graphs;
 import java.util.*;
 import java.util.Map.Entry;
 
+
 /**
  * Created by stefanoandriolo on 19/04/17.
  */
 public class Graph<T extends Comparable<T>> implements IGraph<T> {
 
-    HashMap<Node<T>, LinkedList<Node<T>>> vertexes;
+
+	HashMap<Node<T>, LinkedList<Node<T>>> vertexes;
 
 
     public Graph() {
@@ -66,17 +68,7 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
 
     @Override
     public void print() {
-        for (Entry<Node<T>, LinkedList<Node<T>>> e :
-                this.vertexes.entrySet()) {
-            System.out.print(e.getKey() + " : ");
-
-            for (Node<T> l :
-                    e.getValue()) {
-                System.out.print(l + " ");
-            }
-
-            System.out.println();
-        }
+        System.out.println(this);
     }
     
     
@@ -98,4 +90,40 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
     		return null;
     	}
     }
+    
+    
+    public Node<T> getNodeWithValue(T key) {
+    	
+    	Iterator<Node<T>> i = vertexes.keySet().iterator();
+    	
+    	while (i.hasNext()) {
+    		Node<T> result = i.next();
+    		if (result.getElement().compareTo(key) == 0) return result;
+    	}
+    	
+		return null;
+    }
+    
+
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		String s = "";
+		
+        for (Entry<Node<T>, LinkedList<Node<T>>> e :
+            this.vertexes.entrySet()) {
+        	s += e.getKey() + " : ";
+	
+	        for (Node<T> l :
+	                e.getValue()) {
+	        	s += l + " ";
+	        }
+	
+	        s += "\n";
+	    }
+        
+        return s;
+	}
 }

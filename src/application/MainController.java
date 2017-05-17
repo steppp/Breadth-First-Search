@@ -1,41 +1,64 @@
 package application;
 
 import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.FileChooser;
+import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
+import utility.Trigonometry;
+import model.arrow.Arrow;
 
-public class MainController {
+public class MainController implements Initializable {
 	
 	static CoordinateNode currentNode = null;
-	static CoordinateNode sourceNode = null;
+	static boolean mouseOverNode = false;
 	
 	@FXML
 	private Pane graphPane;
 	
 	@FXML
-	private TextField outputTextArea;
+	private TextArea outputTextArea;
 	
 	@FXML
 	private TextField pseudocodeTextArea;
+
+    @FXML
+    private Text coordinateLabel;
 	
 	
 	@FXML
 	private void handleButtonClick_GraphPane(MouseEvent e) {
 		
+		// se mi trovo già su un nodo questo metodo non deve essere eseguito
+		if (mouseOverNode) return;
+		
+		// se clicco su uno spazio vuoto mentro sto collegando due nodi annullo l'operazione ed esco dal metodo
+		if (currentNode != null) {
+			currentNode = null;
+			return;
+		}
+				
 		Singleton s = Singleton.getInstance();
 		
 		if (!s.graphLoaded) {	// non c'è ancora nessun grafo visualizzato, quindi gestisco il click
@@ -77,21 +100,51 @@ public class MainController {
 		
 		sp.getChildren().addAll(c, t);
 		
+		sp.setOnMouseClicked((MouseEvent e) -> {
+			
+			// primo click su un nodo già esistente -> faccio partire l'azione per collegare due nodi
+			if (currentNode == null) {
+				
+				MainController.currentNode = new CoordinateNode(index, xPos, yPos);
+				System.out.println("Clicked node " + index);
+				System.out.println(currentNode);
+			} else {
+				// secondo click su un altro nodo -> creo il collegamento tra i due se non si tratta dello stesso nodo
+				
+				// stesso nodo, non faccio niente
+				if (index == currentNode.getIndex()) return;
+				
+				System.out.println("Target node " + index);
+	    		
+	    		Arrow edge = new Arrow(currentNode.getxPos(), currentNode.getyPos(), xPos, yPos, 5.0);
+	    		// calcolo il punto finale effettivo considerando il raggio del nodo ed il suo contorno
+	    		edge.calculateEndWithOffset(radius + 3.0);
+	    		edge.setSourceLabel(currentNode.getIndex() + "");
+	    		edge.setTargetLabel(index + "");
+	    		
+	    		
+	    		graphPane.getChildren().add(0, edge);
+	    		
+	    		// creazione del vertice tra i due nodi
+	    		Graph<CoordinateNode> graph = Singleton.getInstance().getCurrentGraph();
+	    		Node<CoordinateNode> source = graph.getNodeWithValue(currentNode);
+	    		Node<CoordinateNode> target = graph.getNodeWithValue(new CoordinateNode(index, xPos, yPos));
+	    		
+	    		graph.insertEdge(source, target);
+	    		
+	    		// pongo a null currentNode per segnalare che non si stanno più collegando due nodi
+	    		currentNode = null;
+	    		
+	    		System.out.println(edge);
+			}
+		});
+		
 		sp.setOnMouseEntered((MouseEvent e) -> {
-			
-			// TODO: Risolvere il bug
-			// -------- BUG ----------
-			// non viene rilevato l'evento se è già in corso l'evento "mousePressed" del pannello
-			
-			MainController.currentNode = new CoordinateNode(index, xPos, yPos);
-			System.out.println("Entering node " + index);
-			System.out.println(currentNode);
+			mouseOverNode = true;
 		});
 		
 		sp.setOnMouseExited((MouseEvent e) -> {
-			MainController.currentNode = null;
-			System.out.println("Exiting node " + index);
-			System.out.println(currentNode);
+			mouseOverNode = false;
 		});
 		
 		this.graphPane.getChildren().add(sp);
@@ -103,7 +156,7 @@ public class MainController {
 		Singleton s = Singleton.getInstance();
 		
 		Circle c = new Circle();
-		c.setFill(Color.TRANSPARENT);
+		c.setFill((Color) graphPane.getBackground().getFills().get(0).getFill());
 		c.setStroke(Color.BLACK);
 		c.setStrokeWidth(3);
 		
@@ -155,38 +208,34 @@ public class MainController {
 				new FileChooser.ExtensionFilter("All files", "*.*"),
 				new FileChooser.ExtensionFilter("JSON", "*.json"));
 	}
-	
+
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		graphPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+	}
 	
     @FXML
-    void handleMousePressed_GraphPane(MouseEvent event) {
-    	System.out.println(MainController.currentNode);
-    	if (MainController.currentNode != null) {
-    		// iniziare a disegnare la linea
-    		
-    		MainController.sourceNode = MainController.currentNode;
-			System.out.println("Source node " + sourceNode.getIndex());
-    	}
+    private void handleMenuItem_Delete(ActionEvent event) {
+    	
+    	Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
+    	graphPane.getChildren().clear();
+    	
+    	outputTextArea.appendText("Graph cleared");
     }
-
+    
+    
     @FXML
-    void handleMouseReleased_GraphPane(MouseEvent event) {
-    	System.out.println(MainController.currentNode);
-    	if (MainController.currentNode != null) {
-    		
-    		CoordinateNode target = MainController.currentNode, source = MainController.sourceNode;
-    		
-			System.out.println("Target node " + target.getIndex());
-			
-    		Double radius = Singleton.getInstance().NODE_RADIUS;
-
-    		Line edge = new Line(source.getxPos() + radius, source.getyPos() + radius, target.getxPos() + radius, target.getyPos() + radius);
-    		edge.setStroke(Color.BLACK);
-    		edge.setStrokeWidth(3);
-    		
-    		graphPane.getChildren().add(edge);
-    		
-    		MainController.sourceNode = null;
-    	}
+    private void handleMenuItem_Debug(ActionEvent event) {
+    	outputTextArea.appendText("\n-----------------------------\nHere is the graph:\n\n");
+    	outputTextArea.appendText(Singleton.getInstance().getCurrentGraph().toString());
+    	outputTextArea.appendText("-----------------------------\n");
+    }
+    
+    
+    @FXML
+    private void handleMouseMove_GraphPane(MouseEvent event) {
+    	coordinateLabel.setText(event.getX() + ", " + event.getY());
     }
 }
 
