@@ -5,12 +5,10 @@ import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import model.queue.Queue;
 import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class BfsVisit {
 
-	public static void bfsVisit(Graph<Node<CoordinateNode>> g, Node<CoordinateNode> root) {
+	public static void bfsVisit(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
 		
 		int size = g.V().size();
 		
@@ -30,10 +28,18 @@ public class BfsVisit {
 		while (!s.isEmpty()) {
 			Node<CoordinateNode> u = s.dequeue();
 			
-			// ESAMINO IL NODO U
+			// TODO: ESAMINARE IL NODO U
 			
-			TreeSet<Node<CoordinateNode>> ts = g.adj(u);
-			
+			for (Node<CoordinateNode> v : g.adj(u)) {
+				
+				// TODO: ESAMINARE L'ARCO U-V
+				
+				int vPos = Arrays.asList(visited).indexOf(v);
+				if (!visited[vPos]) {
+					visited[vPos] = true;
+					s.enque(v);
+				}
+			}			
 		}
 	}
 }

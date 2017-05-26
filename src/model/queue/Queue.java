@@ -38,4 +38,9 @@ public class Queue<T> {
     public String toString() {
         return Arrays.toString(this.values);
     }
+
+
+	public boolean isEmpty() {
+		return length == 0;
+	}
 }
