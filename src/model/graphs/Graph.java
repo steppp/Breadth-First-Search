@@ -50,7 +50,9 @@ public class Graph<T extends Comparable<T>> implements IGraph<T> {
     @Override
     // NOTA: Assumiamo che u e v esistano nel grafo
     public boolean insertEdge(Node<T> u, Node<T> v) {
-        if (this.vertexes.containsKey(u) && this.vertexes.containsKey(v)) {
+    	
+        if (this.vertexes.containsKey(u) && this.vertexes.containsKey(v)
+        		&& !this.vertexes.get(u).contains(v)) {
             this.vertexes.get(u).add(v);
             return true;
         }

@@ -113,6 +113,15 @@ public class MainController implements Initializable {
 				
 				// stesso nodo, non faccio niente
 				if (index == currentNode.getIndex()) return;
+	    		
+				
+	    		// creazione del vertice tra i due nodi
+	    		Graph<CoordinateNode> graph = Singleton.getInstance().getCurrentGraph();
+	    		Node<CoordinateNode> source = graph.getNodeWithValue(currentNode);
+	    		Node<CoordinateNode> target = graph.getNodeWithValue(new CoordinateNode(index, xPos, yPos));
+				
+	    		// se non è stato possibile creare il vertice non faccio nulla
+				if (!graph.insertEdge(source, target)) return;
 				
 				System.out.println("Target node " + index);
 	    		
@@ -125,12 +134,6 @@ public class MainController implements Initializable {
 	    		
 	    		graphPane.getChildren().add(0, edge);
 	    		
-	    		// creazione del vertice tra i due nodi
-	    		Graph<CoordinateNode> graph = Singleton.getInstance().getCurrentGraph();
-	    		Node<CoordinateNode> source = graph.getNodeWithValue(currentNode);
-	    		Node<CoordinateNode> target = graph.getNodeWithValue(new CoordinateNode(index, xPos, yPos));
-	    		
-	    		graph.insertEdge(source, target);
 	    		
 	    		// pongo a null currentNode per segnalare che non si stanno più collegando due nodi
 	    		currentNode = null;
