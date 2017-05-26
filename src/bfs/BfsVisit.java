@@ -6,6 +6,11 @@ import model.node.visual.CoordinateNode;
 import model.queue.Queue;
 import java.util.Arrays;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+
 public class BfsVisit {
 
 	public static void bfsVisit(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
@@ -16,17 +21,32 @@ public class BfsVisit {
 		Queue<Node<CoordinateNode>> s = new Queue<>(size);
 		s.enque(root);
 		
-		// inizializzazione del vettore che indica se un certo nodo è già stato visitato
-		Boolean[] visited = new Boolean[size];
+		// inizializzazione di una ObservableList che indica se un certo nodo è già stato visitato
+		ObservableList<Boolean> visited = FXCollections.observableArrayList();
 		for (int i = 0; i < size; i++) {
-			visited[i] = false;
+			visited.set(i, false);
 		}
+
+		visited.addListener(new ListChangeListener<Boolean>() {
+
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Boolean> c) {
+				
+			}
+			
+		});
+		
 		
 		// nodo radice visitato
-		visited[Arrays.asList(visited).indexOf(root)] = true;
+		visited.set(visited.indexOf(root), true);
 		
 		while (!s.isEmpty()) {
+			
+			// -------- MOSTRARE IL VETTORE VISITED ----------
+			
 			Node<CoordinateNode> u = s.dequeue();
+			
+			// -------- MOSTRARE IL VETTORE VISITED ----------
 			
 			// TODO: ESAMINARE IL NODO U
 			
@@ -35,10 +55,12 @@ public class BfsVisit {
 				// TODO: ESAMINARE L'ARCO U-V
 				
 				int vPos = Arrays.asList(visited).indexOf(v);
-				if (!visited[vPos]) {
-					visited[vPos] = true;
+				if (!visited.get(vPos)) {
+					visited.set(vPos, true);
 					s.enque(v);
-				}
+					
+					// --------- NODO INSERITO -----------
+				} // --------- NODO GIA' VISTO -----------
 			}			
 		}
 	}
