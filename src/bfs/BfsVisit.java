@@ -1,19 +1,34 @@
 package bfs;
 
+import model.graphs.Edge;
 import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import model.queue.Queue;
 import java.util.Arrays;
+import java.util.function.Function;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 
+// TODO: rinominare in BfsVisiter
 public class BfsVisit {
+	
+	// proprietà che descrivono le funzioni da applicare durante il progresso dell'algoritmo
+	Function<ObservableList<Boolean>, Void> showVisited;
+	Function<Node<CoordinateNode>, Void> examiningNode;
+	Function<Edge<CoordinateNode>, Void> examiningEdge;
+	Function<Node<CoordinateNode>, Void> insertedNode;
+	Function<Node<CoordinateNode>, Void> notInsertedNode;
 
-	public static void bfsVisit(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
+	// TODO: estrarre g e root dal metodo ed impostarle come proprietà della classe
+	/**
+	 * Effettua una visita in ampiezza sul grafo indicato a partire dal nodo passato come parametro
+	 * @param g grafo da visitare.
+	 * @param root nodo del grafo da cui partire.
+	 */
+	public void bfsVisit(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
 		
 		int size = g.V().size();
 		
@@ -21,6 +36,7 @@ public class BfsVisit {
 		Queue<Node<CoordinateNode>> s = new Queue<>(size);
 		s.enque(root);
 		
+		// TODO: valutare se sia necessario l'utilizzo di un'ObservableList
 		// inizializzazione di una ObservableList che indica se un certo nodo è già stato visitato
 		ObservableList<Boolean> visited = FXCollections.observableArrayList();
 		for (int i = 0; i < size; i++) {
@@ -43,16 +59,20 @@ public class BfsVisit {
 		while (!s.isEmpty()) {
 			
 			// -------- MOSTRARE IL VETTORE VISITED ----------
+			showVisited.apply(visited);
 			
 			Node<CoordinateNode> u = s.dequeue();
 			
 			// -------- MOSTRARE IL VETTORE VISITED ----------
+			showVisited.apply(visited);
 			
-			// TODO: ESAMINARE IL NODO U
+			// -------- ESAMINARE IL NODO U --------
+			examiningNode.apply(u);
 			
 			for (Node<CoordinateNode> v : g.adj(u)) {
 				
-				// TODO: ESAMINARE L'ARCO U-V
+				// -------- ESAMINARE L'ARCO U-V --------
+				examiningEdge.apply(new Edge<CoordinateNode>(u, v));
 				
 				int vPos = Arrays.asList(visited).indexOf(v);
 				if (!visited.get(vPos)) {
@@ -60,7 +80,13 @@ public class BfsVisit {
 					s.enque(v);
 					
 					// --------- NODO INSERITO -----------
-				} // --------- NODO GIA' VISTO -----------
+					// TODO: forse occorre passare tutto il vertice
+					insertedNode.apply(v);
+				} else {
+					// --------- NODO GIA' VISTO -----------
+					// TODO: forse occorre passare tutto il vertice
+					notInsertedNode.apply(v);
+				}
 			}			
 		}
 	}
