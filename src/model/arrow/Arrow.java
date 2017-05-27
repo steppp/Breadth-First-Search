@@ -6,7 +6,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import singleton.Singleton;
 import utility.Trigonometry;
 
 public class Arrow extends Group {

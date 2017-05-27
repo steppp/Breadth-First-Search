@@ -26,7 +26,6 @@ import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
-import utility.Trigonometry;
 import model.arrow.Arrow;
 
 public class MainController implements Initializable {
@@ -230,9 +229,16 @@ public class MainController implements Initializable {
     
     @FXML
     private void handleMenuItem_Debug(ActionEvent event) {
-    	outputTextArea.appendText("\n-----------------------------\nHere is the graph:\n\n");
-    	outputTextArea.appendText(Singleton.getInstance().getCurrentGraph().toString());
-    	outputTextArea.appendText("-----------------------------\n");
+    	
+    	Graph<CoordinateNode> g = Singleton.getInstance().getCurrentGraph();
+    	
+    	if (g != null) {
+	    	outputTextArea.appendText("\n-----------------------------\nHere is the graph:\n\n");
+	    	outputTextArea.appendText(g.toString());
+	    	outputTextArea.appendText("-----------------------------\n");
+    	} else {
+    		outputTextArea.appendText("No graph loaded!\n");
+    	}
     }
     
     

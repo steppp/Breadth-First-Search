@@ -9,33 +9,31 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-
-public class GraphVisiter {
+/**
+ * La classe GraphVisiter descrive degli oggetti che effettuano una visita (BFS) su un certo grafo
+ * a partire da un certo nodo. Questa classe estende la classe Thread in modo che la propria esecuzione
+ * possa essere controllata mettendola in pausa e facendola ripartire, in modo da offrire due modalità:
+ * quella automatica, in cui non ci sono interruzioni, e si arriva direttamente al risultato, e quella
+ * step-by-step, in cui è possibile esaminare ciò che succede durante l'avanzamento dell'algoritmo.
+ * @author stefanoandriolo
+ *
+ */
+public class GraphVisiter extends Thread {
 	
-
-	// ======================================================================================
-	// ======================================================================================
-	// =																					=
-	// =   SI POTREBBERO UTILIZZARE I THREAD PER CONTROLLARE L'AVANZAMENTO DELL'ALGORITMO   =
-	// =																					=
-	// ======================================================================================
-	// ======================================================================================
+	// la classe sfrutta i Thread per gestire la sopsensione e la ripresa dell'esecuzione dell'algoritmo
 	// VEDI QUI -> http://www.codejava.net/java-core/concurrency/how-to-use-threads-in-java-create-start-pause-interrupt-and-join
-	
-	
+	// probabilmente, quando il thread viene sospeso con this.interrupt(), l'esecuzione torna al thread principale
+	// da lì sarà poi possibile riprendere l'esecuzione del thread BFS_VISIT
 	
 	Graph<CoordinateNode> g;
 	Node<CoordinateNode> root;
 	
 	// proprietà che descrivono le funzioni da applicare durante il progresso dell'algoritmo
-	Function<Boolean[], Void> showVisited;
-	Function<Node<CoordinateNode>, Void> onANode;
-	Function<Edge<CoordinateNode>, Void> examiningEdge;
-	Function<Edge<CoordinateNode>, Void> nodeInserted;
-	Function<Edge<CoordinateNode>, Void> nodeNotInserted;
-	
-	// lista dei padri
-	LinkedList<Node<CoordinateNode>> parentList = new LinkedList<>();
+	Function<Boolean[], Void> showVisited = null;
+	Function<Node<CoordinateNode>, Void> onANode = null;
+	Function<Edge<CoordinateNode>, Void> examiningEdge = null;
+	Function<Edge<CoordinateNode>, Void> nodeInserted = null;
+	Function<Edge<CoordinateNode>, Void> nodeNotInserted = null;
 	
 	
 	public GraphVisiter(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
@@ -45,9 +43,47 @@ public class GraphVisiter {
 	
 
 	/**
+	 * @param showVisited the showVisited to set
+	 */
+	public void setShowVisited(Function<Boolean[], Void> showVisited) {
+		this.showVisited = showVisited;
+	}
+
+
+	/**
+	 * @param onANode the onANode to set
+	 */
+	public void setOnANode(Function<Node<CoordinateNode>, Void> onANode) {
+		this.onANode = onANode;
+	}
+
+
+	/**
+	 * @param examiningEdge the examiningEdge to set
+	 */
+	public void setExaminingEdge(Function<Edge<CoordinateNode>, Void> examiningEdge) {
+		this.examiningEdge = examiningEdge;
+	}
+
+
+	/**
+	 * @param nodeInserted the nodeInserted to set
+	 */
+	public void setNodeInserted(Function<Edge<CoordinateNode>, Void> nodeInserted) {
+		this.nodeInserted = nodeInserted;
+	}
+
+
+	/**
+	 * @param nodeNotInserted the nodeNotInserted to set
+	 */
+	public void setNodeNotInserted(Function<Edge<CoordinateNode>, Void> nodeNotInserted) {
+		this.nodeNotInserted = nodeNotInserted;
+	}
+
+
+	/**
 	 * Effettua una visita in ampiezza sul grafo indicato a partire dal nodo passato come parametro
-	 * @param g grafo da visitare.
-	 * @param root nodo del grafo da cui partire.
 	 */
 	public void bfsVisit() {
 		
@@ -62,7 +98,9 @@ public class GraphVisiter {
 		for (int i = 0; i < size; i++) {
 			visited[i] = false;
 		}
-		
+
+		// TODO: aggiornare la lista dei padri
+		//LinkedList<Node<CoordinateNode>> parentList = new LinkedList<>();
 		
 		// nodo radice visitato
 		visited[root.getElement().getIndex()] = true;
@@ -71,18 +109,28 @@ public class GraphVisiter {
 			
 			Node<CoordinateNode> u = s.dequeue();
 			
-			// TODO: forse mostrare anche l'array dei padri
+			// TODO: mostrare anche l'array dei padri
 			// -------- MOSTRARE IL VETTORE VISITED ----------
-			showVisited.apply(visited);
+			if (showVisited != null) {
+				showVisited.apply(visited);
+			}
+			
+			// TODO: verificare se this.interrupt() è il metodo migliore da utilizzare
 			
 			// -------- ESAMINARE IL NODO U --------
-			onANode.apply(u);
+			if (onANode != null) {
+				onANode.apply(u);
+				this.interrupt();
+			}
 			
 			for (Node<CoordinateNode> v : g.adj(u)) {
 				
 				// -------- ESAMINARE L'ARCO U-V --------
 				Edge<CoordinateNode> currentEdge = new Edge<CoordinateNode>(u, v);
-				examiningEdge.apply(currentEdge);
+				if (examiningEdge != null) {
+					examiningEdge.apply(currentEdge);
+					this.interrupt();
+				}
 				
 				int vPos = Arrays.asList(visited).indexOf(v);
 				if (!visited[vPos]) {
@@ -90,12 +138,103 @@ public class GraphVisiter {
 					s.enque(v);
 					
 					// --------- NODO INSERITO -----------
-					nodeInserted.apply(currentEdge);
+					if (nodeInserted != null) {
+						nodeInserted.apply(currentEdge);
+					}
 				} else {
 					// --------- NODO GIA' VISTO -----------
-					nodeNotInserted.apply(currentEdge);
+					if (nodeNotInserted != null) {
+						nodeNotInserted.apply(currentEdge);
+					}
 				}
+				
+				this.interrupt();
 			}			
 		}
 	}
+	
+	
+	public void run() {
+		
+		// inizio solamente se il grafo ed il nodo di partenza non sono nulli
+		if (this.g != null && this.root != null) {
+			this.setName("BFS_VISIT");
+			this.bfsVisit();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
