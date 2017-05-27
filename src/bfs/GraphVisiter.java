@@ -20,6 +20,7 @@ public class GraphVisiter {
 	// =																					=
 	// ======================================================================================
 	// ======================================================================================
+	// VEDI QUI -> http://www.codejava.net/java-core/concurrency/how-to-use-threads-in-java-create-start-pause-interrupt-and-join
 	
 	
 	
