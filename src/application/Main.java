@@ -33,8 +33,7 @@ public class Main extends Application {
 	
 	
 	private void initData() {
-		Graph<CoordinateNode> g = new Graph<>();
 		
-		Singleton.getInstance().setCurrentGraph(g);
+		Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
 	}
 }
