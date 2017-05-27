@@ -5,6 +5,8 @@ import java.util.Iterator;
 import model.graphs.Graph;
 import model.graphs.Node;
 
+//TODO:parametrizza
+//TODO:verificare perchè AlreadyExist restituisce sempre false 
 public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	
 	Graph<Integer> G ;
@@ -26,6 +28,10 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		int n = 10 ;
 		int m = random.nextInt(n) ;
 		
+		while (m == 0) {
+			m = random.nextInt(n) ;
+		}
+		
 		for (i=0;i<m;i++) {
 			
 			Node<Integer> x = new Node<Integer>(i) ;
@@ -33,62 +39,95 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
 		}
+		
 	}
 		
 	public void randomEdges(){
 		
-	Integer[] A = new Integer[this.nodesNumber] ;
+		Random random1 = new Random() ;
 		
-        Iterator<Node<Integer>> I = this.G.V().iterator() ;
-		
-	Integer i = 0 ;
-	    
-	    
-	while (I.hasNext()) {
-		
-		A[i] = I.next().getElement() ;
-	    	i++ ;
-	    	
+		if (this.nodesNumber > 1) {
+			
+			
+			int n = this.nodesNumber +  random1.nextInt(this.nodesNumber) ;
+			
+			while (n == 0) {
+				n = random1.nextInt(this.nodesNumber) ;
+			}
+			
+			Integer[] nodesEl = getNodesArray() ;
+			
+			Integer i ;
+			
+			
+		    for (i=0;i<n;i++){
+		            
+		            Node<Integer> u = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
+					Node<Integer> v = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
+					
+					if (u.getElement() == v.getElement()) {
+						
+						while(u.getElement() == v.getElement()) {
+							
+							u = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
+							v = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
+							
+
+					     }
+					}
+					
+					if (alreadyExist(u,v)) {
+						
+						Integer tmp = u.getElement() ;
+						u = new Node(v.getElement()) ;
+						v = new Node(tmp) ;
+						
+					}
+					
+					if (!alreadyExist(u,v)) {
+						
+						this.G.insertEdge(u, v) ;
+						
+			        }
+		    }
+		}
 	}
-	    
-	   
-	Node<Integer> u ;
-	Node<Integer> v ;
+
+	
+	public Boolean alreadyExist(Node<Integer> x, Node<Integer> y) {
 		
-	Random random1 = new Random() ;
+		Iterator<Node<Integer>> I = this.G.adj(x).iterator() ;
 		
-	if (this.nodesNumber > 1) {
+		Boolean tmp = false ;
+		
+		while (I.hasNext()) {
 			
-		int m = this.nodesNumber ;		//MAX_N edges
-			
-		int n = random1.nextInt(m) ;
-			
-		for (i=0;i<n;i++){
-				
-			u = (Node<Integer>) new Node(A[random1.nextInt(this.nodesNumber - 1)]) ;
-			v = (Node<Integer>) new Node(A[random1.nextInt(this.nodesNumber - 1)]) ;
-				
-			//TODO: verificare che l'arco non sia stato già creato
-			if (u.getElement() != v.getElement()) {
-				this.G.insertEdge(u, v) ;
-				System.out.println("è stato appena creato un arco da " + u + " a " + v );
+			if (I.next() == y) {
+				tmp = true ;
 			}
 			
 		}
+		
+		return tmp ;
 	}
-        }
-
 	
-	//TODO: verificare print()
-	public static void main (String[] args) {
+	public Integer[] getNodesArray() {
+      
+		Integer[] A = new Integer[this.nodesNumber] ;
 		
-		randomGraph<Integer> g1 = new randomGraph<Integer>() ;
+      Iterator<Node<Integer>> I = this.G.V().iterator() ;
 		
-		g1.randomNodes();
-		g1.randomEdges();
-		
-		g1.print() ;
-		
+	    Integer i = 0 ;
+	    
+	    while (I.hasNext()) {
+	    	
+	    	A[i] = I.next().getElement() ;
+	    	i++ ;
+	    	
+	    }
+	    
+	    return A ;
 	}
+
 }
 
