@@ -24,11 +24,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.FileChooser;
+import model.graphs.Edge;
 import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
 import utility.AnimationSettings;
+import utility.Logger;
 import model.arrow.Arrow;
 
 public class MainController implements Initializable {
@@ -205,7 +207,7 @@ public class MainController implements Initializable {
 		// TODO: - Gestire l'apertura del file: "pulire" il grafo già esistente e validare il file appena aperto
 		String filePath = file.getAbsolutePath();
 		
-		
+		Singleton.getInstance().logger.log(filePath);
 	}
 	
 	
@@ -223,7 +225,8 @@ public class MainController implements Initializable {
 		
 		this.coordinateLabel.setText("0.0, 0.0");
 		
-		Singleton.getInstance().animPrefs = new AnimationSettings();
+		// creo l'oggetto Logger nel Singleton per scrivere nella TextArea
+		Singleton.getInstance().logger = new Logger(this.outputTextArea);
 	}
 	
     @FXML
@@ -232,7 +235,7 @@ public class MainController implements Initializable {
     	Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
     	graphPane.getChildren().clear();
     	
-    	outputTextArea.appendText("Graph cleared\n");
+    	Singleton.getInstance().logger.log("Graph cleared\n");
     }
     
     
@@ -242,11 +245,9 @@ public class MainController implements Initializable {
     	Graph<CoordinateNode> g = Singleton.getInstance().getCurrentGraph();
     	
     	if (g != null && !g.V().isEmpty()) {
-	    	outputTextArea.appendText("\n-----------------------------\nHere is the graph:\n\n");
-	    	outputTextArea.appendText(g.toString());
-	    	outputTextArea.appendText("-----------------------------\n");
+	    	Singleton.getInstance().logger.log("\n-----------------------------\nHere is the graph:\n\n" + g.toString() + "-----------------------------\n");
     	} else {
-    		outputTextArea.appendText("No graph loaded!\n");
+    		Singleton.getInstance().logger.log("No graph loaded!");
     	}
     }
     
@@ -328,21 +329,35 @@ public class MainController implements Initializable {
 	private void completeAnimationSetup(GraphVisiter bfs) {
 		
 		bfs.setOnANode((currentNode) -> {
+			Node<CoordinateNode> n = (Node<CoordinateNode>) currentNode;
+			
+			Singleton.getInstance().logger.log(">> On the " + n.getElement().getIndex() + " node");
 			return null;
 		});
 		
 		
 		bfs.setExaminingEdge((edge) -> {
+			Edge<CoordinateNode> e = (Edge<CoordinateNode>) edge;
+			
+			Singleton.getInstance().logger.log("Examining edge from "
+					+ e.getSource().getElement().getIndex()
+					+ " to " + e.getTarget().getElement().getIndex());
 			return null;
 		});
 		
 		
 		bfs.setNodeInserted((edge) -> {
+			Edge<CoordinateNode> e = (Edge<CoordinateNode>) edge;
+			
+			Singleton.getInstance().logger.log("++ Node " + e.getTarget().getElement().getIndex() + " inserted");
 			return null;
 		});
 		
 		
 		bfs.setNodeNotInserted((edge) -> {
+			Edge<CoordinateNode> e = (Edge<CoordinateNode>) edge;
+			
+			Singleton.getInstance().logger.log("-- Node " + e.getTarget().getElement().getIndex() + " not inserted");
 			return null;
 		});
 		

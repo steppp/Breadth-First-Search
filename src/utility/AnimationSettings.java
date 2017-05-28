@@ -16,36 +16,25 @@ public class AnimationSettings {
 	public Double getSpeed() {
 		return speed;
 	}
+	
 	/**
 	 * @param speed the speed to set
 	 */
 	public void setSpeed(Double speed) {
 		this.speed = speed;
 	}
-	/**
-	 * @return the stepByStep
-	 */
-	public Boolean getStepByStep() {
-		return stepByStep;
-	}
-	/**
-	 * @param stepByStep the stepByStep to set
-	 */
-	public void setStepByStep(Boolean stepByStep) {
-		this.stepByStep = stepByStep;
-	}
+	
 	/**
 	 * @return the root
 	 */
 	public Node<CoordinateNode> getRoot() {
 		return root;
 	}
+	
 	/**
 	 * @param root the root to set
 	 */
 	public void setRoot(Node<CoordinateNode> root) {
 		this.root = root;
 	}
-	
-	
 }

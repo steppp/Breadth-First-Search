@@ -132,7 +132,7 @@ public class GraphVisiter extends Thread {
 					this.interrupt();
 				}
 				
-				int vPos = Arrays.asList(visited).indexOf(v);
+				int vPos = v.getElement().getIndex();
 				if (!visited[vPos]) {
 					visited[vPos] = true;
 					s.enque(v);

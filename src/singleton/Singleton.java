@@ -3,6 +3,7 @@ package singleton;
 import model.graphs.*;
 import model.node.visual.CoordinateNode;
 import utility.AnimationSettings;
+import utility.Logger;
 
 public class Singleton {
 
@@ -46,7 +47,6 @@ public class Singleton {
 	
 	public AnimationSettings animPrefs;
 	
-	
 	/**
 	 * Effettua una ricerca tra tutti i Thread attivi e ritorna quello il cui nome corrisponde
 	 * alla stringa passata, o se non ne esiste nessuno che soddisfi questa condizione, null.
@@ -61,4 +61,7 @@ public class Singleton {
 		
 		return null;
 	}
+	
+	
+	public Logger logger;
 }

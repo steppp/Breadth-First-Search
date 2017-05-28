@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import model.graphs.Graph;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
+import utility.AnimationSettings;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -37,5 +38,6 @@ public class Main extends Application {
 	private void initData() {
 		
 		Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
+		Singleton.getInstance().animPrefs = new AnimationSettings();
 	}
 }
