@@ -5,8 +5,6 @@ import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import model.queue.Queue;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.function.Function;
 
 /**
@@ -120,7 +118,14 @@ public class GraphVisiter extends Thread {
 			// -------- ESAMINARE IL NODO U --------
 			if (onANode != null) {
 				onANode.apply(u);
-				this.interrupt();
+				
+				synchronized (this) {
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}
 			}
 			
 			for (Node<CoordinateNode> v : g.adj(u)) {
@@ -129,7 +134,14 @@ public class GraphVisiter extends Thread {
 				Edge<CoordinateNode> currentEdge = new Edge<CoordinateNode>(u, v);
 				if (examiningEdge != null) {
 					examiningEdge.apply(currentEdge);
-					this.interrupt();
+					
+					synchronized (this) {
+						try {
+							this.wait();
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						}
+					}
 				}
 				
 				int vPos = v.getElement().getIndex();
@@ -147,8 +159,14 @@ public class GraphVisiter extends Thread {
 						nodeNotInserted.apply(currentEdge);
 					}
 				}
-				
-				this.interrupt();
+
+				synchronized (this) {
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}
 			}			
 		}
 	}

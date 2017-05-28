@@ -288,7 +288,8 @@ public class MainController implements Initializable {
     		
     	
     	// controllo quale bottone è stato cliccato e, se è quello step-by-step, la variabile diventa true
-    	boolean stepByStep = ((MenuItem) event.getSource()).getId() == "stepbystep";
+    	boolean stepByStep = ((MenuItem) event.getSource()).getId().equals("stepbystep");
+    	System.out.println(stepByStep);
     	
     	Graph<CoordinateNode> currentGraph = Singleton.getInstance().getCurrentGraph();
 		Node<CoordinateNode> root = (Node<CoordinateNode>) currentGraph.V().toArray()[0];
@@ -306,11 +307,10 @@ public class MainController implements Initializable {
     	// con questo ciclo, ogni volta che l'esecuzione passa su questo thread (main), se il
     	// thread secondario è attivo allora lo faccio ripartire, in questo modo avrò
     	// un'esecuzione continua, ma solo nel caso in cui non sia attiva l'esecuzione Step-by-Step
-    	while (bfs.isAlive()) {
-    		if (!stepByStep)
-	    		synchronized (bfs) {
-	    			bfs.notify();
-	    		}
+    	while (bfs.isAlive() && !stepByStep) {
+    		synchronized (bfs) {
+	    		bfs.notify();
+	    	}
     	}
     }
     
