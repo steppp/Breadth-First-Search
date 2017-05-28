@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -27,6 +28,7 @@ import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
+import utility.AnimationSettings;
 import model.arrow.Arrow;
 
 public class MainController implements Initializable {
@@ -220,6 +222,8 @@ public class MainController implements Initializable {
 		this.graphPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		this.coordinateLabel.setText("0.0, 0.0");
+		
+		Singleton.getInstance().animPrefs = new AnimationSettings();
 	}
 	
     @FXML
@@ -272,12 +276,25 @@ public class MainController implements Initializable {
     @FXML
 	@SuppressWarnings("unchecked")
     void handleMenuItem_RunAnimation(ActionEvent event) {
+    	
+    	// se esiste già un Thread con il nome predefinito (è già in corso un'animazione)
+    	// allora lo interrompo prima di avviare questo
+    	Thread existingThread = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
+    	if (existingThread != null) {
+    		// TODO: avvisare dell'interruzione del Thread
+    		existingThread.interrupt();
+    	}
+    		
+    	
+    	// controllo quale bottone è stato cliccato e, se è quello step-by-step, la variabile diventa true
+    	boolean stepByStep = ((MenuItem) event.getSource()).getId() == "stepbystep";
+    	
     	Graph<CoordinateNode> currentGraph = Singleton.getInstance().getCurrentGraph();
 		Node<CoordinateNode> root = (Node<CoordinateNode>) currentGraph.V().toArray()[0];
     	
 		// creo l'oggetto GraphVisiter e setto il nome del thread 
 		GraphVisiter bfs = new GraphVisiter(currentGraph, root);
-		bfs.setName("BFS_VISIT");
+		bfs.setName(AnimationSettings.THREAD_NAME);
     	
 		// imposto le funzioni da richiamare durante l'esecuzione dell'algoritmo
     	completeAnimationSetup(bfs);
@@ -287,19 +304,19 @@ public class MainController implements Initializable {
     	
     	// con questo ciclo, ogni volta che l'esecuzione passa su questo thread (main), se il
     	// thread secondario è attivo allora lo faccio ripartire, in questo modo avrò
-    	// un'esecuzione continua
+    	// un'esecuzione continua, ma solo nel caso in cui non sia attiva l'esecuzione Step-by-Step
     	while (bfs.isAlive()) {
-    		synchronized (bfs) {
-    			bfs.notify();
-    		}
+    		if (!stepByStep)
+	    		synchronized (bfs) {
+	    			bfs.notify();
+	    		}
     	}
     }
     
 
     @FXML
     void handleMenuItem_StepByStep(ActionEvent event) {
-    	// completeAnimationSetup();
-
+    	this.handleMenuItem_RunAnimation(event);
     }
 
 

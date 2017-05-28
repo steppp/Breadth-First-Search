@@ -2,6 +2,7 @@ package singleton;
 
 import model.graphs.*;
 import model.node.visual.CoordinateNode;
+import utility.AnimationSettings;
 
 public class Singleton {
 
@@ -32,8 +33,6 @@ public class Singleton {
 	public boolean graphLoaded;
 	public boolean isAnimating;
 	
-	// TODO: Trovare un modo per creare una variabile che contenga il grafo caricato, il problema è il tipo dei nodi del grafo
-	// che non può essere stabilito a priori (creare un'interfaccia GraphInsertable?)
 	Graph<CoordinateNode> currentGraph;
 	
 	public Graph<CoordinateNode> getCurrentGraph() {
@@ -42,5 +41,24 @@ public class Singleton {
 	
 	public void setCurrentGraph(Graph<CoordinateNode> newGraph) {
 		currentGraph = newGraph;
+	}
+	
+	
+	public AnimationSettings animPrefs;
+	
+	
+	/**
+	 * Effettua una ricerca tra tutti i Thread attivi e ritorna quello il cui nome corrisponde
+	 * alla stringa passata, o se non ne esiste nessuno che soddisfi questa condizione, null.
+	 * @param name nome del Thread desiderato.
+	 * @return Thread con il nome specificato se presente, altrimenti null. 
+	 */
+	public Thread getThreadByName(String name) {
+		for (Thread t : Thread.getAllStackTraces().keySet()) {
+			if (t.getName().equals(name))
+				return t;
+		}
+		
+		return null;
 	}
 }

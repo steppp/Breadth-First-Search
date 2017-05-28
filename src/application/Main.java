@@ -19,6 +19,7 @@ public class Main extends Application {
 			Scene scene = new Scene(root, 1280, 720);
 			
 			initData();
+			// TODO: inserire l'icona dell'applicazione
 			
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);

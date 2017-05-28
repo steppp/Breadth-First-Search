@@ -30,16 +30,28 @@
               <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Delete" text="Delete" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
+            <Menu mnemonicParsing="false" text="Animation">
+              <items>
+                  <Menu mnemonicParsing="false" text="Run..">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Run" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_StepByStep" text="Step-by-Step" />
+                    </items>
+                  </Menu>
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Pause" text="Pause" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_AnimationSettings" text="Settings" />
+              </items>
+            </Menu>
             <Menu mnemonicParsing="false" text="Debug">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Debug" text="Print graph" />
               </items>
             </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
         </menus>
       </MenuBar>
    </top>
@@ -55,9 +67,9 @@
                   </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <TextArea fx:id="outputTextArea" prefHeight="195.0" prefWidth="703.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TextArea fx:id="outputTextArea" editable="false" prefHeight="195.0" prefWidth="703.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <font>
-                              <Font name="Menlo Regular" size="13.0" />
+                              <Font name="Menlo Regular" size="10.0" />
                            </font>
                         </TextArea>
                      </children>

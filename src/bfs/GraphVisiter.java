@@ -158,7 +158,6 @@ public class GraphVisiter extends Thread {
 		
 		// inizio solamente se il grafo ed il nodo di partenza non sono nulli
 		if (this.g != null && this.root != null) {
-			this.setName("BFS_VISIT");
 			this.bfsVisit();
 		}
 	}

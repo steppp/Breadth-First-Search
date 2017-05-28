@@ -35,7 +35,7 @@
                   <Menu mnemonicParsing="false" text="Run..">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Run" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_StepByStep" text="Step-by-Step" />
+                        <MenuItem id="stepbystep" mnemonicParsing="false" onAction="#handleMenuItem_StepByStep" text="Step-by-Step" />
                     </items>
                   </Menu>
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Pause" text="Pause" />
