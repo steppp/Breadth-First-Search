@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import bfs.GraphVisiter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -200,7 +201,9 @@ public class MainController implements Initializable {
 		File file = fc.showOpenDialog(graphPane.getScene().getWindow());
 		
 		// TODO: - Gestire l'apertura del file: "pulire" il grafo già esistente e validare il file appena aperto
-		System.out.println(file.getAbsolutePath());
+		String filePath = file.getAbsolutePath();
+		
+		
 	}
 	
 	
@@ -214,7 +217,9 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		graphPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+		this.graphPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+		
+		this.coordinateLabel.setText("0.0, 0.0");
 	}
 	
     @FXML
@@ -223,7 +228,7 @@ public class MainController implements Initializable {
     	Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
     	graphPane.getChildren().clear();
     	
-    	outputTextArea.appendText("Graph cleared");
+    	outputTextArea.appendText("Graph cleared\n");
     }
     
     
@@ -232,7 +237,7 @@ public class MainController implements Initializable {
     	
     	Graph<CoordinateNode> g = Singleton.getInstance().getCurrentGraph();
     	
-    	if (g != null) {
+    	if (g != null && !g.V().isEmpty()) {
 	    	outputTextArea.appendText("\n-----------------------------\nHere is the graph:\n\n");
 	    	outputTextArea.appendText(g.toString());
 	    	outputTextArea.appendText("-----------------------------\n");
@@ -246,6 +251,89 @@ public class MainController implements Initializable {
     private void handleMouseMove_GraphPane(MouseEvent event) {
     	coordinateLabel.setText(event.getX() + ", " + event.getY());
     }
+    
+    
+    // TODO: inserire metodo per eliminare un nodo graficamente
+    // TODO: inserire metodo per eliminare un vertice graficamente
+    
+    
+    @FXML
+    void handleMenuItem_AnimationSettings(ActionEvent event) {
+
+    }
+    
+    
+    @FXML
+    void handleMenuItem_Pause(ActionEvent event) {
+
+    }
+    
+    
+    @FXML
+	@SuppressWarnings("unchecked")
+    void handleMenuItem_RunAnimation(ActionEvent event) {
+    	Graph<CoordinateNode> currentGraph = Singleton.getInstance().getCurrentGraph();
+		Node<CoordinateNode> root = (Node<CoordinateNode>) currentGraph.V().toArray()[0];
+    	
+		// creo l'oggetto GraphVisiter e setto il nome del thread 
+		GraphVisiter bfs = new GraphVisiter(currentGraph, root);
+		bfs.setName("BFS_VISIT");
+    	
+		// imposto le funzioni da richiamare durante l'esecuzione dell'algoritmo
+    	completeAnimationSetup(bfs);
+    	
+    	//avvio il thread
+    	bfs.start();
+    	
+    	// con questo ciclo, ogni volta che l'esecuzione passa su questo thread (main), se il
+    	// thread secondario è attivo allora lo faccio ripartire, in questo modo avrò
+    	// un'esecuzione continua
+    	while (bfs.isAlive()) {
+    		synchronized (bfs) {
+    			bfs.notify();
+    		}
+    	}
+    }
+    
+
+    @FXML
+    void handleMenuItem_StepByStep(ActionEvent event) {
+    	// completeAnimationSetup();
+
+    }
+
+
+    /**
+     * Metodo che imposta tutte le funzioni che devono essere eseguite durante l'avanzamento
+     * dell'algotitmo
+     * @param bfs oggetto di tipo GraphVisiter di cui impostare le funzioni.
+     */
+	private void completeAnimationSetup(GraphVisiter bfs) {
+		
+		bfs.setOnANode((currentNode) -> {
+			return null;
+		});
+		
+		
+		bfs.setExaminingEdge((edge) -> {
+			return null;
+		});
+		
+		
+		bfs.setNodeInserted((edge) -> {
+			return null;
+		});
+		
+		
+		bfs.setNodeNotInserted((edge) -> {
+			return null;
+		});
+		
+		
+		bfs.setShowVisited((visited) -> {
+			return null;
+		});
+	}
 }
 
 
