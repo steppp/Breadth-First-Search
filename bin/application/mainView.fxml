@@ -34,11 +34,12 @@
               <items>
                   <Menu mnemonicParsing="false" text="Run..">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Run" />
-                        <MenuItem id="stepbystep" mnemonicParsing="false" onAction="#handleMenuItem_StepByStep" text="Step-by-Step" />
+                      <MenuItem id="run" fx:id="runMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Run" />
+                        <MenuItem id="stepbystep" fx:id="sbsMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_StepByStep" text="Step-by-Step" />
                     </items>
                   </Menu>
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Pause" text="Pause" />
+                  <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_Stop" text="Stop" />
+                  <MenuItem fx:id="stepMenuItem" mnemonicParsing="false" text="Next Step" />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_AnimationSettings" text="Settings" />
               </items>
             </Menu>

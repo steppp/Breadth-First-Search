@@ -38,6 +38,9 @@ public class MainController implements Initializable {
 	static CoordinateNode currentNode = null;
 	static boolean mouseOverNode = false;
 	
+	
+	// -------------- CAMPI FXML ------------------
+	
 	@FXML
 	private Pane graphPane;
 	
@@ -49,6 +52,20 @@ public class MainController implements Initializable {
 
     @FXML
     private Text coordinateLabel;
+    
+    @FXML
+    private MenuItem runMenuItem;
+
+    @FXML
+    private MenuItem sbsMenuItem;
+
+    @FXML
+    private MenuItem stopMenuItem;
+
+    @FXML
+    private MenuItem stepMenuItem;
+    
+    // -------------------------------------------
 	
 	
 	@FXML
@@ -195,6 +212,7 @@ public class MainController implements Initializable {
 		t.relocate(radius - (w / 2), radius - (h / 2));
 	}
 	
+	
 	@FXML
     private void handleMenuItem_OpenFile(ActionEvent event) {
 		FileChooser fc = new FileChooser();
@@ -227,7 +245,11 @@ public class MainController implements Initializable {
 		
 		// creo l'oggetto Logger nel Singleton per scrivere nella TextArea
 		Singleton.getInstance().logger = new Logger(this.outputTextArea);
+
+		// imposto lo stato iniziale dei menu
+		this.setMenuItemState(false);
 	}
+	
 	
     @FXML
     private void handleMenuItem_Delete(ActionEvent event) {
@@ -269,7 +291,7 @@ public class MainController implements Initializable {
     
     
     @FXML
-    void handleMenuItem_Pause(ActionEvent event) {
+    void handleMenuItem_Stop(ActionEvent event) {
 
     }
     
@@ -285,7 +307,11 @@ public class MainController implements Initializable {
     		// TODO: avvisare dell'interruzione del Thread
     		existingThread.interrupt();
     	}
-    		
+    	
+
+    	// imposto lo stato dei controlli
+    	this.setMenuItemState(true);
+    	
     	
     	// controllo quale bottone è stato cliccato e, se è quello step-by-step, la variabile diventa true
     	boolean stepByStep = ((MenuItem) event.getSource()).getId().equals("stepbystep");
@@ -312,6 +338,9 @@ public class MainController implements Initializable {
 	    		bfs.notify();
 	    	}
     	}
+    	
+    	// questo non va messo qui perché nel caso dello step-by-step il metodo termina prima di qualsiasi iterazione
+    	//this.setMenuItemState(false);
     }
     
 
@@ -365,6 +394,16 @@ public class MainController implements Initializable {
 		bfs.setShowVisited((visited) -> {
 			return null;
 		});
+	}
+	
+	
+	private void setMenuItemState(Boolean animationIsRunning) {
+
+    	// imposto lo stato dei controlli
+    	runMenuItem.setDisable(animationIsRunning);
+    	sbsMenuItem.setDisable(animationIsRunning);
+    	stopMenuItem.setDisable(!animationIsRunning);
+    	stepMenuItem.setDisable(!animationIsRunning);
 	}
 }
 
