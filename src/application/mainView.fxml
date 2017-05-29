@@ -35,7 +35,7 @@
                   <Menu mnemonicParsing="false" text="Run..">
                     <items>
                       <MenuItem id="run" fx:id="runMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Run" />
-                        <MenuItem id="stepbystep" fx:id="sbsMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_StepByStep" text="Step-by-Step" />
+                        <MenuItem id="stepbystep" fx:id="sbsMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Step-by-Step" />
                     </items>
                   </Menu>
                   <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_Stop" text="Stop" />

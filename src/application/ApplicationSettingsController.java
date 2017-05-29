@@ -47,13 +47,23 @@ public class ApplicationSettingsController implements Initializable {
 		
 		// se non c'è alcun nodo nel grafo non eseguo operazioni
 		if (s.size() != 0) {
+			
+			// carico gli elementi del ChoiceBox
 			ObservableList<Integer> items = (ObservableList<Integer>)
 					FXCollections.observableArrayList(this.getIndexListFromNodeSet(s));
 			
 			rootChoiceBox.setItems(items);
-			rootChoiceBox.setValue(items.get(0));
 			
-			ApplicationSettingsController.setRoot(items.get(0));
+			// se root non è null imposto il suo valore come valore iniziale del ChoiceBox
+			Node<CoordinateNode> root = Singleton.getInstance().animPrefs.getRoot();
+			if (root != null) {
+				rootChoiceBox.setValue(root.getElement().getIndex());
+			} else {
+				// altrimenti imposto come valore iniziale il primo elemento della collezione
+				rootChoiceBox.setValue(items.get(0));
+			}
+			
+			ApplicationSettingsController.setRoot(rootChoiceBox.getValue());
 		}
 			
 		// imposto il listener per l'evento del ChoiceBox se l'elemento selezionate cambia

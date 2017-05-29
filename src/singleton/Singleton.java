@@ -2,6 +2,7 @@ package singleton;
 
 import java.util.Timer;
 
+import application.MainController;
 import model.graphs.*;
 import model.node.visual.CoordinateNode;
 import utility.AnimationSettings;
@@ -69,4 +70,6 @@ public class Singleton {
 	
 	// timer per il delay dei passaggi dell'algoritmo
 	public Timer timer = null;
+	
+	public MainController mainViewController = null;
 }

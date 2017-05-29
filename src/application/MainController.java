@@ -3,6 +3,7 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,8 +20,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -42,6 +41,9 @@ import singleton.Singleton;
 import utility.AnimationSettings;
 import utility.Logger;
 import model.arrow.Arrow;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+
 
 public class MainController implements Initializable {
 	
@@ -255,9 +257,13 @@ public class MainController implements Initializable {
 		
 		// creo l'oggetto Logger nel Singleton per scrivere nella TextArea
 		Singleton.getInstance().logger = new Logger(this.outputTextArea);
+		
+		// salvo una copia dell'istanza di questo controller nel Singleton
+		// per accedervi nei metodi statici
+		Singleton.getInstance().mainViewController = this;
 
 		// imposto lo stato iniziale dei menu
-		this.setMenuItemState(false);
+		setMenuItemState(false);
 	}
 	
 	
@@ -316,79 +322,10 @@ public class MainController implements Initializable {
     }
     
     
-    @FXML
+	@FXML
     void handleMenuItem_RunAnimation(ActionEvent event) {
     	
-    	Singleton s = Singleton.getInstance();
-    	
-    	// se esiste già un Thread con il nome predefinito (è già in corso un'animazione)
-    	// allora lo interrompo prima di avviare questo
-    	Thread existingThread = s.getThreadByName(AnimationSettings.THREAD_NAME);
-    	if (existingThread != null) {
-    		// TODO: avvisare dell'interruzione del Thread
-    		existingThread.interrupt();
-    	}
-    	
-
-    	// imposto lo stato dei controlli
-    	this.setMenuItemState(true);
-    	
-    	
-    	// controllo quale bottone è stato cliccato e, se è quello step-by-step, la variabile diventa true
-    	boolean stepByStep = ((MenuItem) event.getSource()).getId().equals("stepbystep");
-    	System.out.println(stepByStep);
-    	
-    	Graph<CoordinateNode> currentGraph = s.getCurrentGraph();
-		Node<CoordinateNode> root = s.animPrefs.getRoot();
-		
-		// se il nodo radice è null mostro un errore, ripristino lo stato dei controlli e non eseguo il metodo
-		if (root == null) {
-			String errMsg = "Root node cannot be null. Please select one from the Animation Settings window.";
-			s.logger.log(errMsg);
-			
-	    	this.setMenuItemState(false);
-			
-			return;
-		}
-		
-		// creo l'oggetto GraphVisiter e setto il nome del thread 
-		GraphVisiter bfs = new GraphVisiter(currentGraph, root);
-		bfs.setName(AnimationSettings.THREAD_NAME);
-    	
-		// imposto le funzioni da richiamare durante l'esecuzione dell'algoritmo
-    	completeAnimationSetup(bfs);
-    	
-    	//avvio il thread
-    	bfs.start();
-    	
-    	// TODO: aggiornare il commento
-    	// https://stackoverflow.com/a/14742290/5684086
-    	// ogni volta che l'esecuzione passa su questo thread (main), se il
-    	// thread secondario è attivo allora lo faccio ripartire, in questo modo avrò
-    	// un'esecuzione continua, ma solo nel caso in cui non sia attiva l'esecuzione Step-by-Step
-    	if (!stepByStep) {
-        	Singleton.getInstance().timer = new Timer();
-        	long interval = Singleton.getInstance().animPrefs.getInterval();
-        	
-        	Singleton.getInstance().timer.scheduleAtFixedRate(new TimerTask() {
-    			@Override
-    			public void run() {
-    				if (bfs.isAlive())
-    		    		synchronized (bfs) {
-    			    		bfs.notify();
-    			    	}
-    			}
-        	}, interval, interval);
-    	}
-    	
-    	// questo non va messo qui perché nel caso dello step-by-step il metodo termina prima di qualsiasi iterazione
-    	//this.setMenuItemState(false);
-    }
-
-
-	@FXML
-    void handleMenuItem_StepByStep(ActionEvent event) {
-    	this.handleMenuItem_RunAnimation(event);
+    	MainController.run(event);
     }
 
 
@@ -397,7 +334,7 @@ public class MainController implements Initializable {
      * dell'algotitmo
      * @param bfs oggetto di tipo GraphVisiter di cui impostare le funzioni.
      */
-	private void completeAnimationSetup(GraphVisiter bfs) {
+	private static void completeAnimationSetup(GraphVisiter bfs) {
 		
 		bfs.setOnANode((currentNode) -> {
 			Node<CoordinateNode> n = (Node<CoordinateNode>) currentNode;
@@ -440,22 +377,24 @@ public class MainController implements Initializable {
 		
 		bfs.setFunctionEnded((Void) -> {
 			Singleton.getInstance().logger.log("Animation ended!");
-			this.setMenuItemState(false);
+			setMenuItemState(false);
 			
 			return null;
 		}); 
 	}
 	
 	
-	private void setMenuItemState(Boolean animationIsRunning) {
+	private static void setMenuItemState(Boolean animationIsRunning) {
 		
 		Singleton.getInstance().isAnimating = animationIsRunning;
 
+		MainController c = Singleton.getInstance().mainViewController;
+
     	// imposto lo stato dei controlli
-    	runMenuItem.setDisable(animationIsRunning);
-    	sbsMenuItem.setDisable(animationIsRunning);
-    	stopMenuItem.setDisable(!animationIsRunning);
-    	stepMenuItem.setDisable(!animationIsRunning);
+    	c.runMenuItem.setDisable(animationIsRunning);
+    	c.sbsMenuItem.setDisable(animationIsRunning);
+    	c.stopMenuItem.setDisable(!animationIsRunning);
+    	c.stepMenuItem.setDisable(!animationIsRunning);
 	}
 	
 	
@@ -481,18 +420,74 @@ public class MainController implements Initializable {
     }
     
     
-    @FXML
-    void handleKeyPressed_BorderPane(KeyEvent event) {
+    @SuppressWarnings("unchecked")
+	public static Void run(Event e) {
     	
-    	switch (event.getCode()) {
-    	case N:
-    		if (event.isControlDown())
-    			this.handleMenuItem_NextStep(null);
-    		break;
-    		
-    	default:
-    		break;
+    	Singleton s = Singleton.getInstance();
+    	
+    	// se esiste già un Thread con il nome predefinito (è già in corso un'animazione)
+    	// allora lo interrompo prima di avviare questo
+    	Thread existingThread = s.getThreadByName(AnimationSettings.THREAD_NAME);
+    	if (existingThread != null) {
+    		// TODO: avvisare dell'interruzione del Thread
+    		existingThread.interrupt();
     	}
+    	
+    	// controllo quale bottone è stato cliccato e, se è quello step-by-step, la variabile diventa true
+    	// controllo aggiuntivo nel caso sia stato chiamato in seguito ad un comando da tastiera
+    	boolean stepByStep = false;
+    	if (e.getSource() instanceof MenuItem) {
+    		stepByStep = ((MenuItem) e.getSource()).getId().equals("stepbystep");
+    	} else {	// evento partito dalla tastiera
+    		stepByStep = ((KeyEvent) e).getCode() == KeyCode.S;
+    	}
+    	
+    	// imposto lo stato dei controlli
+    	setMenuItemState(true);
+    	
+    	Graph<CoordinateNode> currentGraph = s.getCurrentGraph();
+		Node<CoordinateNode> root = s.animPrefs.getRoot();
+		
+		// se il nodo radice è null ne scelgo uno a caso tra i presenti
+		if (root == null) {
+			String warningMsg = "Warning: source node not set, a random one will be chosen.";
+			s.logger.log(warningMsg);
+
+	    	root = (Node<CoordinateNode>) currentGraph.V().toArray()[0];
+			s.animPrefs.setRoot(root);
+		}
+		
+		// creo l'oggetto GraphVisiter e setto il nome del thread 
+		GraphVisiter bfs = new GraphVisiter(currentGraph, root);
+		bfs.setName(AnimationSettings.THREAD_NAME);
+    	
+		// imposto le funzioni da richiamare durante l'esecuzione dell'algoritmo
+    	completeAnimationSetup(bfs);
+    	
+    	//avvio il thread
+    	bfs.start();
+    	
+    	// TODO: aggiornare il commento
+    	// https://stackoverflow.com/a/14742290/5684086
+    	// ogni volta che l'esecuzione passa su questo thread (main), se il
+    	// thread secondario è attivo allora lo faccio ripartire, in questo modo avrò
+    	// un'esecuzione continua, ma solo nel caso in cui non sia attiva l'esecuzione Step-by-Step
+    	if (!stepByStep) {
+        	Singleton.getInstance().timer = new Timer();
+        	long interval = Singleton.getInstance().animPrefs.getInterval();
+        	
+        	Singleton.getInstance().timer.scheduleAtFixedRate(new TimerTask() {
+    			@Override
+    			public void run() {
+    				if (bfs.isAlive())
+    		    		synchronized (bfs) {
+    			    		bfs.notify();
+    			    	}
+    			}
+        	}, interval, interval);
+    	}
+    	
+    	return null;
     }
 }
 

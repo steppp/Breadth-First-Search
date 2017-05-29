@@ -51,13 +51,27 @@ public class Main extends Application {
 		Singleton.getInstance().animPrefs = new AnimationSettings();
 		
 		// gestore per gli eventi scatenati dalla pressione di un tasto della tastiera
-		stage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
+		stage.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
 			
-			if (event.getCode() == KeyCode.N) {
+			switch(event.getCode()) {
+			case N:
 				if (event.isControlDown()) {
 					Function<Event, Void> handler = MainController::nextStep;
 					handler.apply(event);
 				}
+				break;
+				
+			// sia nel caso S che nel caso R chiamo il metodo run
+			// sarà poi compito di quel metodo di discriminare i due casi
+			case S:
+			case R:
+				if (event.isControlDown()) {
+					Function<Event, Void> handler = MainController::run;
+					handler.apply(event);
+				}
+				break;
+			default:
+				break;
 			}
 		});
 	}
