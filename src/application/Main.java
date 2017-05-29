@@ -9,7 +9,6 @@ import singleton.Singleton;
 import utility.AnimationSettings;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 
 
 public class Main extends Application {

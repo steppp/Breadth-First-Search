@@ -394,6 +394,14 @@ public class MainController implements Initializable {
 		bfs.setShowVisited((visited) -> {
 			return null;
 		});
+		
+		
+		bfs.setFunctionEnded((Void) -> {
+			Singleton.getInstance().logger.log("Animation ended!");
+			this.setMenuItemState(false);
+			
+			return null;
+		}); 
 	}
 	
 	
@@ -405,6 +413,18 @@ public class MainController implements Initializable {
     	stopMenuItem.setDisable(!animationIsRunning);
     	stepMenuItem.setDisable(!animationIsRunning);
 	}
+	
+	
+    @FXML
+    void handleMenuItem_NextStep(ActionEvent event) {
+    	GraphVisiter bfs = (GraphVisiter) Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
+    	
+    	if (bfs != null && bfs.isAlive()) {
+    		synchronized (bfs) {
+    			bfs.notify();
+    		}
+    	}
+    }
 }
 
 

@@ -39,7 +39,7 @@
                     </items>
                   </Menu>
                   <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_Stop" text="Stop" />
-                  <MenuItem fx:id="stepMenuItem" mnemonicParsing="false" text="Next Step" />
+                  <MenuItem fx:id="stepMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_NextStep" text="Next Step" />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_AnimationSettings" text="Settings" />
               </items>
             </Menu>

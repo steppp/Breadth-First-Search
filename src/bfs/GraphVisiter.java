@@ -32,6 +32,7 @@ public class GraphVisiter extends Thread {
 	Function<Edge<CoordinateNode>, Void> examiningEdge = null;
 	Function<Edge<CoordinateNode>, Void> nodeInserted = null;
 	Function<Edge<CoordinateNode>, Void> nodeNotInserted = null;
+	Function<Void, Void> functionEnded = null;
 	
 	
 	public GraphVisiter(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
@@ -77,6 +78,14 @@ public class GraphVisiter extends Thread {
 	 */
 	public void setNodeNotInserted(Function<Edge<CoordinateNode>, Void> nodeNotInserted) {
 		this.nodeNotInserted = nodeNotInserted;
+	}
+
+
+	/**
+	 * @param functionEnded the functionEnded to set
+	 */
+	public void setFunctionEnded(Function<Void, Void> functionEnded) {
+		this.functionEnded = functionEnded;
 	}
 
 
@@ -169,6 +178,10 @@ public class GraphVisiter extends Thread {
 				}
 			}			
 		}
+		
+		// algoritmo terminato
+		if (functionEnded != null) 
+			functionEnded.apply(null);
 	}
 	
 	
