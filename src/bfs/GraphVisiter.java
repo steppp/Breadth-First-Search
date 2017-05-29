@@ -180,7 +180,7 @@ public class GraphVisiter extends Thread {
 		}
 		
 		// algoritmo terminato
-		if (functionEnded != null) 
+		if (functionEnded != null)
 			functionEnded.apply(null);
 	}
 	

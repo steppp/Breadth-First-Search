@@ -6,22 +6,22 @@ import model.node.visual.CoordinateNode;
 public class AnimationSettings {
 
 	public static final String THREAD_NAME = "BFS_THREAD";
-	Double speed = 1.0;
+	long millisInterval = 500L;
 	Node<CoordinateNode> root = null;
 	
 	
 	/**
 	 * @return the speed
 	 */
-	public Double getSpeed() {
-		return speed;
+	public long getInterval() {
+		return millisInterval;
 	}
 	
 	/**
 	 * @param speed the speed to set
 	 */
-	public void setSpeed(Double speed) {
-		this.speed = speed;
+	public void setInterval(long millisInterval) {
+		this.millisInterval = millisInterval;
 	}
 	
 	/**

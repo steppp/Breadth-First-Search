@@ -1,17 +1,26 @@
 package application;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import bfs.GraphVisiter;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -24,6 +33,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import model.graphs.Edge;
 import model.graphs.Graph;
 import model.graphs.Node;
@@ -286,7 +296,17 @@ public class MainController implements Initializable {
     
     @FXML
     void handleMenuItem_AnimationSettings(ActionEvent event) {
-
+    	
+    	try {
+    		Parent root = FXMLLoader.load(getClass().getResource("applicationSettingsView.fxml"));
+    		Stage stage = new Stage();
+    		stage.setTitle("Animation Settings");
+    		stage.setScene(new Scene(root, 400, 150));
+    		stage.show();
+    		stage.setResizable(false);
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
     }
     
     
@@ -297,12 +317,13 @@ public class MainController implements Initializable {
     
     
     @FXML
-	@SuppressWarnings("unchecked")
     void handleMenuItem_RunAnimation(ActionEvent event) {
+    	
+    	Singleton s = Singleton.getInstance();
     	
     	// se esiste già un Thread con il nome predefinito (è già in corso un'animazione)
     	// allora lo interrompo prima di avviare questo
-    	Thread existingThread = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
+    	Thread existingThread = s.getThreadByName(AnimationSettings.THREAD_NAME);
     	if (existingThread != null) {
     		// TODO: avvisare dell'interruzione del Thread
     		existingThread.interrupt();
@@ -317,9 +338,19 @@ public class MainController implements Initializable {
     	boolean stepByStep = ((MenuItem) event.getSource()).getId().equals("stepbystep");
     	System.out.println(stepByStep);
     	
-    	Graph<CoordinateNode> currentGraph = Singleton.getInstance().getCurrentGraph();
-		Node<CoordinateNode> root = (Node<CoordinateNode>) currentGraph.V().toArray()[0];
-    	
+    	Graph<CoordinateNode> currentGraph = s.getCurrentGraph();
+		Node<CoordinateNode> root = s.animPrefs.getRoot();
+		
+		// se il nodo radice è null mostro un errore, ripristino lo stato dei controlli e non eseguo il metodo
+		if (root == null) {
+			String errMsg = "Root node cannot be null. Please select one from the Animation Settings window.";
+			s.logger.log(errMsg);
+			
+	    	this.setMenuItemState(false);
+			
+			return;
+		}
+		
 		// creo l'oggetto GraphVisiter e setto il nome del thread 
 		GraphVisiter bfs = new GraphVisiter(currentGraph, root);
 		bfs.setName(AnimationSettings.THREAD_NAME);
@@ -330,21 +361,32 @@ public class MainController implements Initializable {
     	//avvio il thread
     	bfs.start();
     	
-    	// con questo ciclo, ogni volta che l'esecuzione passa su questo thread (main), se il
+    	// TODO: aggiornare il commento
+    	// https://stackoverflow.com/a/14742290/5684086
+    	// ogni volta che l'esecuzione passa su questo thread (main), se il
     	// thread secondario è attivo allora lo faccio ripartire, in questo modo avrò
     	// un'esecuzione continua, ma solo nel caso in cui non sia attiva l'esecuzione Step-by-Step
-    	while (bfs.isAlive() && !stepByStep) {
-    		synchronized (bfs) {
-	    		bfs.notify();
-	    	}
+    	if (!stepByStep) {
+        	Singleton.getInstance().timer = new Timer();
+        	long interval = Singleton.getInstance().animPrefs.getInterval();
+        	
+        	Singleton.getInstance().timer.scheduleAtFixedRate(new TimerTask() {
+    			@Override
+    			public void run() {
+    				if (bfs.isAlive())
+    		    		synchronized (bfs) {
+    			    		bfs.notify();
+    			    	}
+    			}
+        	}, interval, interval);
     	}
     	
     	// questo non va messo qui perché nel caso dello step-by-step il metodo termina prima di qualsiasi iterazione
     	//this.setMenuItemState(false);
     }
-    
 
-    @FXML
+
+	@FXML
     void handleMenuItem_StepByStep(ActionEvent event) {
     	this.handleMenuItem_RunAnimation(event);
     }
@@ -406,6 +448,8 @@ public class MainController implements Initializable {
 	
 	
 	private void setMenuItemState(Boolean animationIsRunning) {
+		
+		Singleton.getInstance().isAnimating = animationIsRunning;
 
     	// imposto lo stato dei controlli
     	runMenuItem.setDisable(animationIsRunning);
@@ -417,12 +461,37 @@ public class MainController implements Initializable {
 	
     @FXML
     void handleMenuItem_NextStep(ActionEvent event) {
+    	MainController.nextStep(event);
+    }
+    
+    
+    public static Void nextStep(Event e) {
+    	if (!Singleton.getInstance().isAnimating)
+    		return null;
+    	
     	GraphVisiter bfs = (GraphVisiter) Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
     	
     	if (bfs != null && bfs.isAlive()) {
     		synchronized (bfs) {
     			bfs.notify();
     		}
+    	}
+    	
+    	return null;
+    }
+    
+    
+    @FXML
+    void handleKeyPressed_BorderPane(KeyEvent event) {
+    	
+    	switch (event.getCode()) {
+    	case N:
+    		if (event.isControlDown())
+    			this.handleMenuItem_NextStep(null);
+    		break;
+    		
+    	default:
+    		break;
     	}
     }
 }

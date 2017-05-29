@@ -7,15 +7,17 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="mainWindow" maxHeight="150.0" maxWidth="400.0" minHeight="150.0" minWidth="400.0" prefHeight="150.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ApplicationSettingsController">
    <children>
       <HBox prefHeight="10.0" prefWidth="580.0">
          <children>
-            <Label prefHeight="17.0" prefWidth="207.0" text="Root node" />
+            <Label prefHeight="39.0" prefWidth="190.0" text="Root node" />
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <ChoiceBox prefWidth="150.0" />
+                  <ChoiceBox fx:id="rootChoiceBox" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                     </HBox.margin></ChoiceBox>
                </children>
             </HBox>
          </children>
@@ -25,15 +27,21 @@
       </HBox>
       <HBox alignment="CENTER_LEFT" prefHeight="14.0" prefWidth="580.0">
          <children>
-            <Label prefHeight="17.0" prefWidth="207.0" text="Animation speed">
+            <Label prefHeight="40.0" prefWidth="186.0" text="Animation speed">
                <HBox.margin>
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                </HBox.margin>
             </Label>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Slider prefHeight="16.0" prefWidth="154.0" />
+                  <Slider fx:id="speedSlider" prefHeight="41.0" prefWidth="154.0">
+                     <HBox.margin>
+                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                     </HBox.margin></Slider>
                </children>
+               <HBox.margin>
+                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+               </HBox.margin>
             </HBox>
          </children>
       </HBox>

@@ -1,5 +1,7 @@
 package singleton;
 
+import java.util.Timer;
+
 import model.graphs.*;
 import model.node.visual.CoordinateNode;
 import utility.AnimationSettings;
@@ -64,4 +66,7 @@ public class Singleton {
 	
 	
 	public Logger logger;
+	
+	// timer per il delay dei passaggi dell'algoritmo
+	public Timer timer = null;
 }
