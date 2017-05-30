@@ -1,5 +1,7 @@
 package singleton;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Set;
 import java.util.Timer;
 
 import application.MainController;
@@ -72,4 +74,6 @@ public class Singleton {
 	public Timer timer = null;
 	
 	public MainController mainViewController = null;
+	
+	public SimpleEntry<Node<CoordinateNode>, Set<Node<CoordinateNode>>> currentNodeAndList = null;
 }

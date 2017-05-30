@@ -3,6 +3,7 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -336,8 +337,17 @@ public class MainController implements Initializable {
 	private static void completeAnimationSetup(GraphVisiter bfs) {
 		
 		bfs.setOnANode((currentNode) -> {
+			Singleton s = Singleton.getInstance();
+			
+			// ripristino il colore del nodo precedente se esiste
+			if (s.currentNodeAndList != null)
+				paintNode(s.getCurrentGraph(), s.currentNodeAndList.getKey(), Color.GREEN);
+			
 			// coloro il nodo specificato
-			paintNode(Singleton.getInstance().getCurrentGraph(), currentNode, Color.CORAL);
+			paintNode(s.getCurrentGraph(), currentNode, Color.CORAL);
+			s.currentNodeAndList = new SimpleEntry<>(
+							s.getCurrentGraph().getNodeWithValue(currentNode.getElement()),
+							s.getCurrentGraph().adj(currentNode));
 			
 			Singleton.getInstance().logger.log(">> On the node " + currentNode.getElement().getIndex());
 			return null;
@@ -355,11 +365,16 @@ public class MainController implements Initializable {
 		
 		
 		bfs.setNodeInserted((edge) -> {
-			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
-			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.BLACK);
+			Singleton s = Singleton.getInstance();
 			
-			// TODO: impostare il verde solamente all'ultima iterazione 
-			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getTarget(), Color.GREEN);
+			paintNode(s.getCurrentGraph(), edge.getTarget(), Color.GREEN);
+			paintEdge(s.getCurrentGraph(), edge, Color.BLACK);
+			
+			// rimuovo gli elementi dalla lista di adiacenza della copia del nodo sorgente
+			// e, se una volta fatto ciò si svuota, coloro il nodo con il colore precedente
+			s.currentNodeAndList.getValue().remove(edge.getTarget());
+			if (s.currentNodeAndList.getValue().isEmpty())
+				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
 			
 			Singleton.getInstance().logger.log("++ Node " + edge.getTarget().getElement().getIndex() + " inserted");
 			return null;
@@ -367,11 +382,15 @@ public class MainController implements Initializable {
 		
 		
 		bfs.setNodeNotInserted((edge) -> {
-			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
+			Singleton s = Singleton.getInstance();
+			
+			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getTarget(), Color.GREEN);
 			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.DARKGRAY);
 			
-			// TODO: impostare il verde solamente all'ultima iterazione 
-			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getTarget(), Color.GREEN);
+			// vedi metodo precedente
+			s.currentNodeAndList.getValue().remove(edge.getTarget());
+			if (s.currentNodeAndList.getValue().isEmpty())
+				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
 			
 			Singleton.getInstance().logger.log("-- Node " + edge.getTarget().getElement().getIndex() + " not inserted");
 			return null;
@@ -384,6 +403,10 @@ public class MainController implements Initializable {
 		
 		
 		bfs.setFunctionEnded((Void) -> {
+			// ripristino il colore del nodo precedente se esiste
+			if (Singleton.getInstance().currentNodeAndList != null)
+				paintNode(Singleton.getInstance().getCurrentGraph(), Singleton.getInstance().currentNodeAndList.getKey(), Color.GREEN);
+			
 			Singleton.getInstance().logger.log("Animation ended!");
 			setMenuItemState(false);
 			
@@ -492,7 +515,7 @@ public class MainController implements Initializable {
     	bfs.start();
     	
     	// https://stackoverflow.com/a/14742290/5684086
-    	// se l'esecuzione non è step-by-step, avvio un timer che ad ogni tick, la cui distanza è indicata
+    	// se l'esecuzione non è step-by-step, avvio un timer che ad ogni tick, il cui intervallo è indicato
     	// dal campo interval nel Singleton, se il thread dell'animazione è ancora attivo, lo riprende
     	if (!stepByStep) {
         	Singleton.getInstance().timer = new Timer();
