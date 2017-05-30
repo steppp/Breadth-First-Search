@@ -3,7 +3,6 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -337,35 +336,44 @@ public class MainController implements Initializable {
 	private static void completeAnimationSetup(GraphVisiter bfs) {
 		
 		bfs.setOnANode((currentNode) -> {
-			Node<CoordinateNode> n = (Node<CoordinateNode>) currentNode;
+			// coloro il nodo specificato
+			paintNode(Singleton.getInstance().getCurrentGraph(), currentNode, Color.CORAL);
 			
-			Singleton.getInstance().logger.log(">> On the " + n.getElement().getIndex() + " node");
+			Singleton.getInstance().logger.log(">> On the " + currentNode.getElement().getIndex() + " node");
 			return null;
 		});
 		
 		
 		bfs.setExaminingEdge((edge) -> {
-			Edge<CoordinateNode> e = (Edge<CoordinateNode>) edge;
+			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.DARKGRAY);
 			
 			Singleton.getInstance().logger.log("Examining edge from "
-					+ e.getSource().getElement().getIndex()
-					+ " to " + e.getTarget().getElement().getIndex());
+					+ edge.getSource().getElement().getIndex()
+					+ " to " + edge.getTarget().getElement().getIndex());
 			return null;
 		});
 		
 		
 		bfs.setNodeInserted((edge) -> {
-			Edge<CoordinateNode> e = (Edge<CoordinateNode>) edge;
+			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
+			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.BLACK);
 			
-			Singleton.getInstance().logger.log("++ Node " + e.getTarget().getElement().getIndex() + " inserted");
+			// TODO: impostare il verde solamente all'ultima iterazione 
+			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getTarget(), Color.GREEN);
+			
+			Singleton.getInstance().logger.log("++ Node " + edge.getTarget().getElement().getIndex() + " inserted");
 			return null;
 		});
 		
 		
 		bfs.setNodeNotInserted((edge) -> {
-			Edge<CoordinateNode> e = (Edge<CoordinateNode>) edge;
+			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
+			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.DARKGRAY);
 			
-			Singleton.getInstance().logger.log("-- Node " + e.getTarget().getElement().getIndex() + " not inserted");
+			// TODO: impostare il verde solamente all'ultima iterazione 
+			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getTarget(), Color.GREEN);
+			
+			Singleton.getInstance().logger.log("-- Node " + edge.getTarget().getElement().getIndex() + " not inserted");
 			return null;
 		});
 		
@@ -388,6 +396,7 @@ public class MainController implements Initializable {
 		
 		Singleton.getInstance().isAnimating = animationIsRunning;
 
+		// ottengo l'istanza del controller dal Singleton
 		MainController c = Singleton.getInstance().mainViewController;
 
     	// imposto lo stato dei controlli
@@ -420,10 +429,26 @@ public class MainController implements Initializable {
     }
     
     
-    @SuppressWarnings("unchecked")
 	public static Void run(Event e) {
     	
     	Singleton s = Singleton.getInstance();
+ 
+    	// se il grafo non contiene nodi
+    	if (s.getCurrentGraph().V().size() == 0) {
+    		s.logger.log("No graph loaded.");
+    		return null;
+    	}
+    	
+    	Graph<CoordinateNode> currentGraph = s.getCurrentGraph();
+		Node<CoordinateNode> root = s.animPrefs.getRoot();
+		
+		// se il nodo radice è null interrompo l'operazione
+		if (root == null) {
+			String errMsg = "Source node not set, aborting.";
+			s.logger.log(errMsg);
+
+	    	return null;
+		}
     	
     	// se esiste già un Thread con il nome predefinito (è già in corso un'animazione)
     	// allora lo interrompo prima di avviare questo
@@ -444,18 +469,6 @@ public class MainController implements Initializable {
     	
     	// imposto lo stato dei controlli
     	setMenuItemState(true);
-    	
-    	Graph<CoordinateNode> currentGraph = s.getCurrentGraph();
-		Node<CoordinateNode> root = s.animPrefs.getRoot();
-		
-		// se il nodo radice è null ne scelgo uno a caso tra i presenti
-		if (root == null) {
-			String warningMsg = "Warning: source node not set, a random one will be chosen.";
-			s.logger.log(warningMsg);
-
-	    	root = (Node<CoordinateNode>) currentGraph.V().toArray()[0];
-			s.animPrefs.setRoot(root);
-		}
 		
 		// creo l'oggetto GraphVisiter e setto il nome del thread 
 		GraphVisiter bfs = new GraphVisiter(currentGraph, root);
@@ -488,6 +501,61 @@ public class MainController implements Initializable {
     	}
     	
     	return null;
+    }
+    
+    
+    private static void paintNode(Graph<CoordinateNode> g, final Node<CoordinateNode> node, final Color c) {
+    	MainController mainC = Singleton.getInstance().mainViewController;
+    	
+    	StackPane visualNode = null;
+    	Text nodeValue = null;
+    	
+    	// per ogni nodo figlio del pannello
+    	for (javafx.scene.Node n : mainC.graphPane.getChildren()) {
+    		if (n instanceof StackPane) {
+    			visualNode = (StackPane) n;
+    			
+    			for (javafx.scene.Node possibleText : visualNode.getChildren()) {
+    				if (possibleText instanceof Text) {
+    					nodeValue = (Text) possibleText;
+    					
+    					if (nodeValue.getText().equals(node.getElement().toString())) {
+    						System.out.println("StackPane color");
+    						nodeValue.setStroke(c);
+
+    						if (visualNode.getChildren().get(0) instanceof Circle) {
+    							((Circle) visualNode.getChildren().get(0)).setStroke(c);
+    						} else {
+    							((Circle) visualNode.getChildren().get(1)).setStroke(c);
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
+    }
+    
+    
+    private static void paintEdge(Graph<CoordinateNode> g, final Edge<CoordinateNode> edge, final Color c) {
+    	MainController mainC = Singleton.getInstance().mainViewController;
+    	Arrow a = null;
+    	
+    	// per ogni nodo figlio del pannello
+    	for (javafx.scene.Node n : mainC.graphPane.getChildren()) {
+    		
+    		// se il nodo è un'istanza di Arrow
+    		if (n instanceof Arrow) {
+    			a = (Arrow) n;	// lo converto in Arrow
+    			
+    			// se il vertice passato corrisponde alla freccia
+    			// cioè origine della freccia == all'origine del vertice
+    			// & destinazione della freccia == destinazione del vertice
+    			if (a.getSourceLabel().equals(edge.getSource().getElement().toString()) &&
+    					a.getTargetLabel().equals(edge.getTarget().getElement().toString())) {
+					a.setColor(c);
+    			}
+    		}
+    	}
     }
 }
 
