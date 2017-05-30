@@ -272,6 +272,7 @@ public class MainController implements Initializable {
     @FXML
     private void handleMenuItem_Delete(ActionEvent event) {
     	
+    	Singleton.getInstance().currentNodeAndList = null;
     	Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
     	graphPane.getChildren().clear();
     	
@@ -321,7 +322,7 @@ public class MainController implements Initializable {
     @SuppressWarnings("deprecation")
 	@FXML
     void handleMenuItem_Stop(ActionEvent event) {
-    	// TODO: bloccare l'animazione riportare il grafo ai colori originali (nero)
+    	Singleton.getInstance().currentNodeAndList = null;
     	
     	// interrompo il thread dell'animazione
     	Thread bfs = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
