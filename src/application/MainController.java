@@ -339,7 +339,7 @@ public class MainController implements Initializable {
 			// coloro il nodo specificato
 			paintNode(Singleton.getInstance().getCurrentGraph(), currentNode, Color.CORAL);
 			
-			Singleton.getInstance().logger.log(">> On the " + currentNode.getElement().getIndex() + " node");
+			Singleton.getInstance().logger.log(">> On the node " + currentNode.getElement().getIndex());
 			return null;
 		});
 		
@@ -392,6 +392,10 @@ public class MainController implements Initializable {
 	}
 	
 	
+	/**
+	 * Imposta lo stato dei controlli nel menu per eseguire l'algoritmo
+	 * @param animationIsRunning true se è in corso o sta per iniziare un'animazione, false altrimenti.
+	 */
 	private static void setMenuItemState(Boolean animationIsRunning) {
 		
 		Singleton.getInstance().isAnimating = animationIsRunning;
@@ -413,12 +417,19 @@ public class MainController implements Initializable {
     }
     
     
+    /**
+     * Esegue uno step dell'animazione
+     * @param e	evento per cui è stato richiamato il metodo.
+     * @return Void
+     */
     public static Void nextStep(Event e) {
     	if (!Singleton.getInstance().isAnimating)
     		return null;
     	
+    	// ottengo il thread
     	GraphVisiter bfs = (GraphVisiter) Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
     	
+    	// se il thread esiste ed è ancora in esecuzione, lo riprendo
     	if (bfs != null && bfs.isAlive()) {
     		synchronized (bfs) {
     			bfs.notify();
@@ -480,11 +491,9 @@ public class MainController implements Initializable {
     	//avvio il thread
     	bfs.start();
     	
-    	// TODO: aggiornare il commento
     	// https://stackoverflow.com/a/14742290/5684086
-    	// ogni volta che l'esecuzione passa su questo thread (main), se il
-    	// thread secondario è attivo allora lo faccio ripartire, in questo modo avrò
-    	// un'esecuzione continua, ma solo nel caso in cui non sia attiva l'esecuzione Step-by-Step
+    	// se l'esecuzione non è step-by-step, avvio un timer che ad ogni tick, la cui distanza è indicata
+    	// dal campo interval nel Singleton, se il thread dell'animazione è ancora attivo, lo riprende
     	if (!stepByStep) {
         	Singleton.getInstance().timer = new Timer();
         	long interval = Singleton.getInstance().animPrefs.getInterval();
@@ -504,6 +513,12 @@ public class MainController implements Initializable {
     }
     
     
+	/***
+	 * Colora il nodo indicato dal parametro node del grafo g del colore c
+	 * @param g grafo in cui si trova il nodo.
+	 * @param node nodo da colorare.
+	 * @param c colore da applicare al nodo
+	 */
     private static void paintNode(Graph<CoordinateNode> g, final Node<CoordinateNode> node, final Color c) {
     	MainController mainC = Singleton.getInstance().mainViewController;
     	
@@ -512,20 +527,23 @@ public class MainController implements Initializable {
     	
     	// per ogni nodo figlio del pannello
     	for (javafx.scene.Node n : mainC.graphPane.getChildren()) {
-    		if (n instanceof StackPane) {
-    			visualNode = (StackPane) n;
+    		if (n instanceof StackPane) {	// se trovo uno StackPane
+    			visualNode = (StackPane) n;	// cast esplicito
     			
+    			// per ogni figlio dello StackView
     			for (javafx.scene.Node possibleText : visualNode.getChildren()) {
-    				if (possibleText instanceof Text) {
+    				if (possibleText instanceof Text) {	// se il nodo è un Testo
     					nodeValue = (Text) possibleText;
     					
+    					// se il testo trovato è uguale all'indice del nodo passato come parametro
     					if (nodeValue.getText().equals(node.getElement().toString())) {
-    						System.out.println("StackPane color");
-    						nodeValue.setStroke(c);
+    						nodeValue.setStroke(c);		// lo coloro
 
+    						// se il cerchio è il primo figlio coloro il primo figlio
     						if (visualNode.getChildren().get(0) instanceof Circle) {
     							((Circle) visualNode.getChildren().get(0)).setStroke(c);
     						} else {
+    							// altrimenti coloro il secondo
     							((Circle) visualNode.getChildren().get(1)).setStroke(c);
     						}
     					}
@@ -536,6 +554,12 @@ public class MainController implements Initializable {
     }
     
     
+    /**
+     * Colora il vertice edge del grafo g del colore c
+     * @param g grafo in cui si trova il vertice.
+     * @param edge vertice da considerare.
+     * @param c colore da applicare.
+     */
     private static void paintEdge(Graph<CoordinateNode> g, final Edge<CoordinateNode> edge, final Color c) {
     	MainController mainC = Singleton.getInstance().mainViewController;
     	Arrow a = null;
