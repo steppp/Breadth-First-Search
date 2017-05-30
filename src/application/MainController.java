@@ -28,6 +28,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
@@ -208,6 +209,7 @@ public class MainController implements Initializable {
 		t.setText(s);
 		t.setFont(new Font(16));
 		t.setBoundsType(TextBoundsType.VISUAL);
+		t.setStroke(Color.BLACK);
 		this.centerText(t);
 		
 		return t;
@@ -316,9 +318,27 @@ public class MainController implements Initializable {
     }
     
     
-    @FXML
+    @SuppressWarnings("deprecation")
+	@FXML
     void handleMenuItem_Stop(ActionEvent event) {
-
+    	// TODO: bloccare l'animazione riportare il grafo ai colori originali (nero)
+    	
+    	// interrompo il thread dell'animazione
+    	Thread bfs = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
+    	if (bfs != null && bfs.isAlive())
+    		bfs.stop();
+    	
+    	for (javafx.scene.Node n : graphPane.getChildren()) {
+    		if (n instanceof Arrow)
+    			((Arrow) n).setColor(Color.BLACK);	// coloro la freccia di nero
+    		else {
+    			StackPane sp = ((StackPane) n);
+    			
+    			// coloro il cerchio ed il testo di nero
+				((Shape) sp.getChildren().get(0)).setStroke(Color.BLACK);
+				((Shape) sp.getChildren().get(1)).setStroke(Color.BLACK);
+    		}
+    	}
     }
     
     
@@ -562,13 +582,8 @@ public class MainController implements Initializable {
     					if (nodeValue.getText().equals(node.getElement().toString())) {
     						nodeValue.setStroke(c);		// lo coloro
 
-    						// se il cerchio è il primo figlio coloro il primo figlio
-    						if (visualNode.getChildren().get(0) instanceof Circle) {
-    							((Circle) visualNode.getChildren().get(0)).setStroke(c);
-    						} else {
-    							// altrimenti coloro il secondo
-    							((Circle) visualNode.getChildren().get(1)).setStroke(c);
-    						}
+    	    				((Shape) visualNode.getChildren().get(0)).setStroke(c);
+    	    				((Shape) visualNode.getChildren().get(1)).setStroke(c);
     					}
     				}
     			}
