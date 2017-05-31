@@ -52,8 +52,8 @@ public class Main extends Application {
 		Singleton.getInstance().animPrefs = new AnimationSettings();
 		
 		// imposto l'icona dell'applicazione
-		InputStream logoStream = getClass().getResourceAsStream("/logo.png");
-		stage.getIcons().add(new Image(logoStream));
+		// non funziona ancora madonna postina
+		stage.getIcons().add(new Image("file:resources/images/logo.png"));
 		
 		// gestore per gli eventi scatenati dalla pressione di un tasto della tastiera
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
