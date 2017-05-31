@@ -1,5 +1,6 @@
 package application;
 	
+import java.io.InputStream;
 import java.util.function.Function;
 
 import javafx.application.Application;
@@ -13,6 +14,7 @@ import singleton.Singleton;
 import utility.AnimationSettings;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 
 
@@ -48,6 +50,10 @@ public class Main extends Application {
 		
 		Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
 		Singleton.getInstance().animPrefs = new AnimationSettings();
+		
+		// imposto l'icona dell'applicazione
+		InputStream logoStream = getClass().getResourceAsStream("/logo.png");
+		stage.getIcons().add(new Image(logoStream));
 		
 		// gestore per gli eventi scatenati dalla pressione di un tasto della tastiera
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
