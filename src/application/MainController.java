@@ -87,13 +87,16 @@ public class MainController implements Initializable {
 		// se mi trovo già su un nodo questo metodo non deve essere eseguito
 		if (mouseOverNode) return;
 		
+		Singleton s = Singleton.getInstance();
+		
 		// se clicco su uno spazio vuoto mentro sto collegando due nodi annullo l'operazione ed esco dal metodo
 		if (currentNode != null) {
+			
+			s.logger.log("Task canceled.");
 			currentNode = null;
+			
 			return;
 		}
-				
-		Singleton s = Singleton.getInstance();
 		
 		if (!s.graphLoaded) {	// non c'è ancora nessun grafo visualizzato, quindi gestisco il click
 			
@@ -102,6 +105,7 @@ public class MainController implements Initializable {
 			
 			Integer index = 0;
 			
+			// ricavo l'indice massimo tra i nodi del grafo
 			Node<CoordinateNode> maxIndexKey = s.getCurrentGraph().getMaxKey();
 			if (maxIndexKey != null) {
 				index = ((CoordinateNode) maxIndexKey.getElement()).getIndex() + 1;
@@ -112,15 +116,13 @@ public class MainController implements Initializable {
 			
 			// inserisco il nuovo nodo nel grafo
 			s.getCurrentGraph().insertNode(new Node<CoordinateNode>(new CoordinateNode(index, xPos, yPos)));
-			
-			// s.getCurrentGraph().print();
 		}
 	}
 	
 	
 	private void drawNode(Integer index, double xPos, double yPos) {
 		
-		// se currentNode non è null vuol dire che mi trovo gia su un nodo, quindi non faccio nulla
+		// se currentNode non è null vuol dire che mi trovo già su un nodo, quindi non faccio nulla
 		if (MainController.currentNode != null) return;
 		
 		double radius = Singleton.getInstance().NODE_RADIUS;
@@ -140,8 +142,10 @@ public class MainController implements Initializable {
 			if (currentNode == null) {
 				
 				MainController.currentNode = new CoordinateNode(index, xPos, yPos);
-				System.out.println("Clicked node " + index);
-				System.out.println(currentNode);
+				
+				// comunico all'utente che il nodo sorgente dell'arco è stato impostato
+				Singleton.getInstance().logger.log("Source node selected: " + currentNode.toString() +
+						", waiting for the target node..");
 			} else {
 				// secondo click su un altro nodo -> creo il collegamento tra i due se non si tratta dello stesso nodo
 				
@@ -156,8 +160,6 @@ public class MainController implements Initializable {
 				
 	    		// se non è stato possibile creare il vertice non faccio nulla
 				if (!graph.insertEdge(source, target)) return;
-				
-				System.out.println("Target node " + index);
 	    		
 	    		Arrow edge = new Arrow(currentNode.getxPos(), currentNode.getyPos(), xPos, yPos, 5.0);
 	    		// calcolo il punto finale effettivo considerando il raggio del nodo ed il suo contorno
@@ -168,11 +170,13 @@ public class MainController implements Initializable {
 	    		
 	    		graphPane.getChildren().add(0, edge);
 	    		
+	    		// cmomunico che l'arco è stato creato
+	    		Singleton.getInstance().logger.log("Edge from " + edge.getSourceLabel() + " to " +
+	    				edge.getTargetLabel() + " has been created.");
+	    		
 	    		
 	    		// pongo a null currentNode per segnalare che non si stanno più collegando due nodi
 	    		currentNode = null;
-	    		
-	    		System.out.println(edge);
 			}
 		});
 		
@@ -327,17 +331,24 @@ public class MainController implements Initializable {
     	// interrompo il thread dell'animazione
     	Thread bfs = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
     	if (bfs != null && bfs.isAlive())
+    		// deprecato, ma non è stato possibile fare altrimenti
     		bfs.stop();
     	
+    	// resetto il colore originale del grafo
+    	resetGraphColor(this.graphPane, Color.BLACK);
+    }
+    
+    
+    public static void resetGraphColor(final Pane graphPane, final Color c) {
     	for (javafx.scene.Node n : graphPane.getChildren()) {
     		if (n instanceof Arrow)
-    			((Arrow) n).setColor(Color.BLACK);	// coloro la freccia di nero
+    			((Arrow) n).setColor(c);	// coloro la freccia di nero
     		else {
     			StackPane sp = ((StackPane) n);
     			
     			// coloro il cerchio ed il testo di nero
-				((Shape) sp.getChildren().get(0)).setStroke(Color.BLACK);
-				((Shape) sp.getChildren().get(1)).setStroke(Color.BLACK);
+				((Shape) sp.getChildren().get(0)).setStroke(c);
+				((Shape) sp.getChildren().get(1)).setStroke(c);
     		}
     	}
     }
@@ -345,6 +356,9 @@ public class MainController implements Initializable {
     
 	@FXML
     void handleMenuItem_RunAnimation(ActionEvent event) {
+		
+		// resetto il colore originale del grafo
+    	resetGraphColor(this.graphPane, Color.BLACK);
     	
     	MainController.run(event);
     }
@@ -440,7 +454,7 @@ public class MainController implements Initializable {
 	 * Imposta lo stato dei controlli nel menu per eseguire l'algoritmo
 	 * @param animationIsRunning true se è in corso o sta per iniziare un'animazione, false altrimenti.
 	 */
-	private static void setMenuItemState(Boolean animationIsRunning) {
+	private static void setMenuItemState(final Boolean animationIsRunning) {
 		
 		Singleton.getInstance().isAnimating = animationIsRunning;
 
@@ -611,7 +625,7 @@ public class MainController implements Initializable {
     			a = (Arrow) n;	// lo converto in Arrow
     			
     			// se il vertice passato corrisponde alla freccia
-    			// cioè origine della freccia == all'origine del vertice
+    			// cioè origine della freccia == origine del vertice
     			// & destinazione della freccia == destinazione del vertice
     			if (a.getSourceLabel().equals(edge.getSource().getElement().toString()) &&
     					a.getTargetLabel().equals(edge.getTarget().getElement().toString())) {

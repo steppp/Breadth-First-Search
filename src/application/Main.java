@@ -1,6 +1,5 @@
 package application;
 	
-import java.io.InputStream;
 import java.util.function.Function;
 
 import javafx.application.Application;
