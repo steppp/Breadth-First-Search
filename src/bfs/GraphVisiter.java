@@ -18,7 +18,7 @@ import java.util.function.Function;
  */
 public class GraphVisiter extends Thread {
 	
-	// la classe sfrutta i Thread per gestire la sopsensione e la ripresa dell'esecuzione dell'algoritmo
+	// la classe sfrutta i Thread per gestire la sospensione e la ripresa dell'esecuzione dell'algoritmo
 	// VEDI QUI -> http://www.codejava.net/java-core/concurrency/how-to-use-threads-in-java-create-start-pause-interrupt-and-join
 	// probabilmente, quando il thread viene sospeso con this.interrupt(), l'esecuzione torna al thread principale
 	// da lì sarà poi possibile riprendere l'esecuzione del thread BFS_VISIT
@@ -192,79 +192,4 @@ public class GraphVisiter extends Thread {
 			this.bfsVisit();
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

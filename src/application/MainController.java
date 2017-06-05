@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Function;
 
 import bfs.GraphVisiter;
 import javafx.event.ActionEvent;
@@ -15,17 +18,21 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
@@ -77,6 +84,18 @@ public class MainController implements Initializable {
 
     @FXML
     private MenuItem stepMenuItem;
+    
+    @FXML
+    private ScrollPane scrollPaneVisited;
+
+    @FXML
+    private VBox vBoxVisited;
+
+    @FXML
+    private ScrollPane scrollPaneParents;
+
+    @FXML
+    private VBox vBoxParents;
     
     // -------------------------------------------
 	
@@ -170,7 +189,7 @@ public class MainController implements Initializable {
 	    		
 	    		graphPane.getChildren().add(0, edge);
 	    		
-	    		// cmomunico che l'arco è stato creato
+	    		// comunico che l'arco è stato creato
 	    		Singleton.getInstance().logger.log("Edge from " + edge.getSourceLabel() + " to " +
 	    				edge.getTargetLabel() + " has been created.");
 	    		
@@ -192,6 +211,10 @@ public class MainController implements Initializable {
 	}
 	
 	
+	/**
+	 * Ritorna il cerchio che racchiuderà l'indice del nodo
+	 * @return cerchio che indicherà il nodo.
+	 */
 	private Circle createCircle() {
 		
 		Singleton s = Singleton.getInstance();
@@ -207,6 +230,11 @@ public class MainController implements Initializable {
 	}
 	
 	
+	/**
+	 * Ritorna il crea il componente grafico testo utilizzando la stringa passata come parametro
+	 * @param s testo da visualizzare
+	 * @return testo creato come componente grafico.
+	 */
 	private Text createText(String s) {
 		Text t = new Text();
 		
@@ -221,6 +249,10 @@ public class MainController implements Initializable {
 	
 	
 	// http://stackoverflow.com/questions/17437411/how-to-put-a-text-into-a-circle-object-to-display-it-from-circles-center
+	/**
+	 * Centra il testo rispetto al cerchio in cui è inserito
+	 * @param t	testo da centrare
+	 */
 	private void centerText(Text t) {
 		double radius = Singleton.getInstance().NODE_RADIUS;
 		
@@ -247,6 +279,10 @@ public class MainController implements Initializable {
 	}
 	
 	
+	/**
+	 * Imposta i parametri del FileChooser passato come parametro
+	 * @param fc costnte di tipo FileChooser di cui impostare i parametri.
+	 */
 	private void configureFileChooser(final FileChooser fc) {
 		fc.setTitle("Open graph from json file");
 		fc.getExtensionFilters().addAll(
@@ -322,9 +358,9 @@ public class MainController implements Initializable {
     	}
     }
     
-    
-    @SuppressWarnings("deprecation")
+
 	@FXML
+    @SuppressWarnings("deprecation")
     void handleMenuItem_Stop(ActionEvent event) {
     	Singleton.getInstance().currentNodeAndList = null;
     	
@@ -339,6 +375,11 @@ public class MainController implements Initializable {
     }
     
     
+    /**
+     * Imposta il colore c come colore di tutti i figli del pannello passato
+     * @param graphPane padre dei componenti grafici da colorare.
+     * @param c colore da applicare agli elementi
+     */
     public static void resetGraphColor(final Pane graphPane, final Color c) {
     	for (javafx.scene.Node n : graphPane.getChildren()) {
     		if (n instanceof Arrow)
@@ -432,9 +473,7 @@ public class MainController implements Initializable {
 		});
 		
 		
-		bfs.setShowVisited((visited) -> {
-			return null;
-		});
+		bfs.setShowVisited(MainController::showVisited);
 		
 		
 		bfs.setFunctionEnded((Void) -> {
@@ -523,7 +562,7 @@ public class MainController implements Initializable {
     	// allora lo interrompo prima di avviare questo
     	Thread existingThread = s.getThreadByName(AnimationSettings.THREAD_NAME);
     	if (existingThread != null) {
-    		// TODO: avvisare dell'interruzione del Thread
+    		s.logger.log("Animation interrupted");
     		existingThread.interrupt();
     	}
     	
@@ -545,6 +584,9 @@ public class MainController implements Initializable {
     	
 		// imposto le funzioni da richiamare durante l'esecuzione dell'algoritmo
     	completeAnimationSetup(bfs);
+    	
+    	// creo le celle e le inserisco nel VBox apposito
+    	createCells(new Boolean[s.getCurrentGraph().V().size()]);
     	
     	//avvio il thread
     	bfs.start();
@@ -632,6 +674,44 @@ public class MainController implements Initializable {
 					a.setColor(c);
     			}
     		}
+    	}
+    }
+    
+    
+    /**
+     * Visualizza il vettore dei nodi visitati sull'interfaccia
+     * @param visited array dei nodi visitati.
+     * @return Void
+     */
+    public static Void showVisited(final Boolean[] visited) {
+    	
+    	
+    	
+    	return null;
+    }
+    
+    
+    /**
+     * Crea le celle per visualizzare il vettore visited e le inizializza.
+     * @param visited array che contiene le informazioni sui nodi visitati.
+     */
+    private static void createCells(Boolean[] visited) {
+    	Singleton s = Singleton.getInstance();
+    	
+    	ScrollPane visitedScrollPane = s.mainViewController.scrollPaneVisited;
+    	VBox visitedVBox = s.mainViewController.vBoxVisited;
+    	final double width = visitedScrollPane.getWidth();
+    	final double cellHeight = visitedScrollPane.getHeight() / 10;
+    	
+    	HBox cell = new HBox();
+    	
+    	for (Integer i = 0; i < visited.length; i++) {
+        	cell.setPrefSize(width, cellHeight);
+        	cell.getChildren().add(new Text(i.toString()));
+        	cell.getChildren().add(new Text(visited[i].toString()));
+        	cell.setAlignment(Pos.CENTER);
+        	
+        	visitedVBox.getChildren().add(cell);
     	}
     }
 }
