@@ -586,7 +586,9 @@ public class MainController implements Initializable {
     	completeAnimationSetup(bfs);
     	
     	// creo le celle e le inserisco nel VBox apposito
-    	createCells(new Boolean[s.getCurrentGraph().V().size()]);
+    	Boolean[] temp = new Boolean[s.getCurrentGraph().V().size()];
+    	Arrays.fill(temp, false);
+    	createCells(temp);
     	
     	//avvio il thread
     	bfs.start();
@@ -684,8 +686,20 @@ public class MainController implements Initializable {
      * @return Void
      */
     public static Void showVisited(final Boolean[] visited) {
+    	Singleton s = Singleton.getInstance();
+    	VBox visitedVBox = s.mainViewController.vBoxVisited;
     	
-    	
+    	HBox cell = null;
+
+    	// itero su tutti gli elementi del VBox
+    	for (Integer i = 0; i < visited.length; i++) {
+    		
+    		// imposto il secondo componente della cella come visitato
+    		if (visited[i]) {
+        		cell = (HBox) visitedVBox.getChildren().get(i);
+        		((Text) cell.getChildren().get(1)).setText(visited[i].toString());
+    		}
+    	}
     	
     	return null;
     }
@@ -703,9 +717,14 @@ public class MainController implements Initializable {
     	final double width = visitedScrollPane.getWidth();
     	final double cellHeight = visitedScrollPane.getHeight() / 10;
     	
-    	HBox cell = new HBox();
-    	
     	for (Integer i = 0; i < visited.length; i++) {
+        	
+        	HBox cell = new HBox();
+    		
+    		// incremento l'altezza del VBox
+    		visitedVBox.setPrefHeight(visitedVBox.getHeight() + cellHeight);
+    		
+    		// creo la cella e la aggiungo al VBox
         	cell.setPrefSize(width, cellHeight);
         	cell.getChildren().add(new Text(i.toString()));
         	cell.getChildren().add(new Text(visited[i].toString()));
