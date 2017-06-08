@@ -1,7 +1,6 @@
 package model.randomGraph ;
 
 import java.util.Random ;
-import java.util.Iterator;
 import model.graphs.Graph;
 import model.graphs.Node;
 
