@@ -22,8 +22,8 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_OpenFile" text="Open.." />
-                  <MenuItem mnemonicParsing="false" text="Save" />
-                  <MenuItem mnemonicParsing="false" text="Save as.." />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Save" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_SaveAs" text="Save as.." />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RandomGraph" text="Random graph.." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Close" />
