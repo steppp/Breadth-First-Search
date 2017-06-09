@@ -86,7 +86,8 @@ public class Main extends Application {
 	 */
 	private static void performOnClosingCleanUp(WindowEvent we) {
 		
-		Singleton.getInstance().logger.log("Goodbye!");
+		Singleton.getInstance().logger.log("Goodbye!");	
+		System.out.println("Goodbye!");
 		
 		// annullo il timer per l'esecuzione animata dell'algoritmo
 		if (Singleton.getInstance().timer != null) {

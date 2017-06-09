@@ -24,7 +24,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_OpenFile" text="Open.." />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RandomGraph" text="Random graph.." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">

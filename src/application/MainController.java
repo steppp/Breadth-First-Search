@@ -226,6 +226,37 @@ public class MainController implements Initializable {
     	}
     }
     
+    // https://stackoverflow.com/questions/11468800/javafx2-closing-a-stage-substage-from-within-itself#comment21432693_11476162
+    @FXML
+    private void handleMenuItem_Close(ActionEvent event) {
+    	Stage primaryStage = (Stage) this.graphPane.getScene().getWindow();
+    	
+    	// chiudo la finestra ma prima richiamo il gestore per l'evento di chiusura
+    	// che altrimenti non si attiverebbe
+    	primaryStage.getOnCloseRequest().handle(null);
+    	primaryStage.close();
+    }
+    
+    
+    /**
+     * Gestisce il salvataggio normale
+     * @param event
+     */
+    @FXML
+    void handleMenuItem_Save(ActionEvent event) {
+
+    }
+    
+    
+	/**
+	 * Gestisce il salvataggio "personalizzato"
+	 * @param event
+	 */
+    @FXML
+    void handleMenuItem_SaveAs(ActionEvent event) {
+
+    }
+    
     
     @FXML
     private void handleMouseMove_GraphPane(MouseEvent event) {
@@ -574,6 +605,7 @@ public class MainController implements Initializable {
     }
     
     
+    // TODO: convertire questo metodo per poter essere usato anche con il vettore dei padri
     /**
      * Visualizza il vettore dei nodi visitati sull'interfaccia
      * @param visited array dei nodi visitati.
@@ -598,7 +630,7 @@ public class MainController implements Initializable {
     	return null;
     }
     
-    
+    // TODO: convertire questo metodo per poter essere usato anche con il vettore dei padri
     /**
      * Crea le celle per visualizzare il vettore visited e le inizializza.
      * @param visited array che contiene le informazioni sui nodi visitati.
