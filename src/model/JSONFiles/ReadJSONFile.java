@@ -10,6 +10,8 @@ import model.node.visual.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
+
+//TODO: metodi per generare il file 
 /* Questo file permette di leggere un file con estensione .json 
    contentente l'implementazione di un grafo. 
    dati caricati da un file di testo
