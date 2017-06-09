@@ -1,6 +1,7 @@
 package model.randomGraph ;
 
 import java.util.Random ;
+import java.util.Iterator;
 import model.graphs.Graph;
 import model.graphs.Node;
 
@@ -31,7 +32,7 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		
 	}
 		
-    /*
+	/*
 	 * Crea un numero casuale di nodi (MAX 10) etichettati con numeri interi da 0 a 10	
 	 * Assumiamo che venga applicato ad un grafo di Interi
 	 */
@@ -46,7 +47,6 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		while (m <= 1) {
 			m = random.nextInt(n) ;
 		}
-		
 		
 		for (i=0;i<m;i++) {
 			
@@ -65,8 +65,8 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	public boolean nNodes(int n){
 		
 		Integer i ;
-
-        if (n>1) {
+		
+		if (n>1) {
 			for (i=0;i<n;i++) {
 				
 				Node<T> x = new Node((T)i) ;
@@ -80,7 +80,6 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		return false ;
 	}
 		
-
 	/*
 	 * Crea un numero casuale di archi(MAX 2n)
 	 * Assumiamo che venga applicato ad un grafo di Interi
@@ -96,16 +95,15 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			
 			int n = this.nodesNumber +  random1.nextInt(this.nodesNumber) ;
 			
-			Object[] nodesEl =  this.G.V().toArray() ; ;
+			Object[] nodesEl =  this.G.V().toArray() ;
 			
 			Integer i ;
 			
-		    for (i=0;i<n;i++){
+			for (i=0;i<n;i++){
 		            
 		    	Node<T> u = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
 		    	Node<T> v = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
 		    	
-
 		    	tmp = this.G.insertEdge(u, v) ;
 		    	
 		    	if (!tmp ) {		//se non è stato possibile creare l'arco faccio un nuovo tentativo
@@ -117,8 +115,6 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			    	this.G.insertEdge(u, v) ;
 			    	
 		    	}
-
-		    	this.G.insertEdge(u, v) ;
 		    }
 		}
 	}
@@ -130,4 +126,6 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 
 	
 }
+
+
 

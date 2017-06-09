@@ -4,6 +4,10 @@ import java.util.Random ;
 import model.graphs.Graph;
 import model.graphs.Node;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 278a73a5c5662fc229629d96190dc060056d3116
 public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	
 	Graph<T> G ;
@@ -29,9 +33,12 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		this.nNodes(n) ;
 		this.randomEdges();
 		
+<<<<<<< HEAD
 	}
 		
-    /*
+=======
+>>>>>>> 278a73a5c5662fc229629d96190dc060056d3116
+	/*
 	 * Crea un numero casuale di nodi (MAX 10) etichettati con numeri interi da 0 a 10	
 	 * Assumiamo che venga applicato ad un grafo di Interi
 	 */
@@ -65,8 +72,9 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	public boolean nNodes(int n){
 		
 		Integer i ;
-
-        if (n>1) {
+		
+<<<<<<< HEAD
+		if (n>1) {
 			for (i=0;i<n;i++) {
 				
 				Node<T> x = new Node((T)i) ;
@@ -80,7 +88,8 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		return false ;
 	}
 		
-
+=======
+>>>>>>> 278a73a5c5662fc229629d96190dc060056d3116
 	/*
 	 * Crea un numero casuale di archi(MAX 2n)
 	 * Assumiamo che venga applicato ad un grafo di Interi
@@ -96,16 +105,24 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			
 			int n = this.nodesNumber +  random1.nextInt(this.nodesNumber) ;
 			
+<<<<<<< HEAD
+			Object[] nodesEl =  this.G.V().toArray() ;
+			
+			Integer i ;
+			
+			for (i=0;i<n;i++){
+=======
 			Object[] nodesEl =  this.G.V().toArray() ; ;
 			
 			Integer i ;
 			
 		    for (i=0;i<n;i++){
+>>>>>>> 278a73a5c5662fc229629d96190dc060056d3116
 		            
 		    	Node<T> u = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
 		    	Node<T> v = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
 		    	
-
+<<<<<<< HEAD
 		    	tmp = this.G.insertEdge(u, v) ;
 		    	
 		    	if (!tmp ) {		//se non è stato possibile creare l'arco faccio un nuovo tentativo
@@ -117,8 +134,10 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			    	this.G.insertEdge(u, v) ;
 			    	
 		    	}
-
+=======
 		    	this.G.insertEdge(u, v) ;
+		    	
+>>>>>>> 278a73a5c5662fc229629d96190dc060056d3116
 		    }
 		}
 	}
@@ -130,4 +149,9 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 
 	
 }
+<<<<<<< HEAD
 
+
+
+=======
+>>>>>>> 278a73a5c5662fc229629d96190dc060056d3116
