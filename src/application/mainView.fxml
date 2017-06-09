@@ -4,7 +4,6 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -22,9 +21,7 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_OpenFile" text="Open.." />
-                  <MenuItem mnemonicParsing="false" text="Random graph.." />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RandomGraph" text="Random graph.." />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -84,7 +81,7 @@
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
                         <Text fx:id="coordinateLabel" layoutX="14.0" layoutY="26.568359375" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.21875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
-                        <ScrollPane fx:id="scrollPaneVisited" layoutX="14.0" layoutY="33.0" prefHeight="379.0" prefWidth="60.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="72.0">
+                        <ScrollPane fx:id="scrollPaneVisited" hbarPolicy="NEVER" layoutX="14.0" layoutY="33.0" prefHeight="379.0" prefWidth="60.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="72.0">
                            <content>
                               <VBox fx:id="vBoxVisited" prefHeight="377.0" prefWidth="58.0" />
                            </content>

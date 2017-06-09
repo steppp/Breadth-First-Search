@@ -5,6 +5,9 @@ import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import model.queue.Queue;
+import singleton.Singleton;
+
+import java.util.Arrays;
 import java.util.function.Function;
 
 /**
@@ -106,8 +109,8 @@ public class GraphVisiter extends Thread {
 			visited[i] = false;
 		}
 
-		// TODO: aggiornare la lista dei padri
-		//LinkedList<Node<CoordinateNode>> parentList = new LinkedList<>();
+		// TODO: aggiornare la lista dei padri, ricordarsi di visualizzare la lista dei padri
+		Integer[] parents = new Integer[size];
 		
 		// nodo radice visitato
 		visited[root.getElement().getIndex()] = true;
@@ -121,9 +124,7 @@ public class GraphVisiter extends Thread {
 			if (showVisited != null) {
 				showVisited.apply(visited);
 			}
-			
-			// TODO: verificare se this.interrupt() è il metodo migliore da utilizzare
-			
+						
 			// -------- ESAMINARE IL NODO U --------
 			if (onANode != null) {
 				onANode.apply(u);
@@ -158,6 +159,8 @@ public class GraphVisiter extends Thread {
 					visited[vPos] = true;
 					s.enque(v);
 					
+					parents[vPos] = u.getElement().getIndex();
+					
 					// --------- NODO INSERITO -----------
 					if (nodeInserted != null) {
 						nodeInserted.apply(currentEdge);
@@ -178,6 +181,8 @@ public class GraphVisiter extends Thread {
 				}
 			}			
 		}
+		
+		Singleton.getInstance().logger.log(Arrays.asList(parents).toString());
 		
 		// algoritmo terminato
 		if (functionEnded != null)

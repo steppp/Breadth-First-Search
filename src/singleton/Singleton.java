@@ -8,6 +8,7 @@ import application.MainController;
 import model.graphs.*;
 import model.node.visual.CoordinateNode;
 import utility.AnimationSettings;
+import utility.GraphDrawer;
 import utility.Logger;
 
 public class Singleton {
@@ -76,4 +77,42 @@ public class Singleton {
 	public MainController mainViewController = null;
 	
 	public SimpleEntry<Node<CoordinateNode>, Set<Node<CoordinateNode>>> currentNodeAndList = null;
+	
+	/**
+	 * Oggetto che si occupa di disegnare un grafo o solamente i nodi o gli archi su un pannello specificato.
+	 * Questo oggetto viene istanziato all'apertura della finestra principale, quindi quando servirà disegnare qualcosa,
+	 * basterà richiamare l'apposito metodo su questo oggetto.
+	 */
+	public GraphDrawer drawingUtility = null;
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

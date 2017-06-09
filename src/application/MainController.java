@@ -21,6 +21,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -47,6 +48,7 @@ import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
 import utility.AnimationSettings;
+import utility.GraphDrawer;
 import utility.Logger;
 import model.arrow.Arrow;
 import javafx.scene.input.KeyCode;
@@ -55,8 +57,8 @@ import javafx.scene.input.KeyEvent;
 
 public class MainController implements Initializable {
 	
-	static CoordinateNode currentNode = null;
-	static boolean mouseOverNode = false;
+	public static CoordinateNode currentNode = null;
+	public static boolean mouseOverNode = false;
 	
 	
 	// -------------- CAMPI FXML ------------------
@@ -131,7 +133,12 @@ public class MainController implements Initializable {
 			}
 				
 			// disegno il nodo come un intero (indice del nodo) all'interno di un cerchio
-			this.drawNode(index, xPos, yPos);
+			
+			// se currentNode non è null vuol dire che mi trovo già su un nodo, quindi non faccio nulla
+			if (MainController.currentNode != null) return;
+			
+			// TODO: creare il nodo con GraphDrawer
+			Singleton.getInstance().drawingUtility.drawNode(index, xPos, yPos);
 			
 			// inserisco il nuovo nodo nel grafo
 			s.getCurrentGraph().insertNode(new Node<CoordinateNode>(new CoordinateNode(index, xPos, yPos)));
@@ -139,128 +146,6 @@ public class MainController implements Initializable {
 	}
 	
 	
-	private void drawNode(Integer index, double xPos, double yPos) {
-		
-		// se currentNode non è null vuol dire che mi trovo già su un nodo, quindi non faccio nulla
-		if (MainController.currentNode != null) return;
-		
-		double radius = Singleton.getInstance().NODE_RADIUS;
-		
-		Circle c = this.createCircle();
-		Text t = this.createText(index.toString());
-		
-		StackPane sp = new StackPane();
-		sp.setLayoutX(xPos - radius);
-		sp.setLayoutY(yPos - radius);
-		
-		sp.getChildren().addAll(c, t);
-		
-		sp.setOnMouseClicked((MouseEvent e) -> {
-			
-			// primo click su un nodo già esistente -> faccio partire l'azione per collegare due nodi
-			if (currentNode == null) {
-				
-				MainController.currentNode = new CoordinateNode(index, xPos, yPos);
-				
-				// comunico all'utente che il nodo sorgente dell'arco è stato impostato
-				Singleton.getInstance().logger.log("Source node selected: " + currentNode.toString() +
-						", waiting for the target node..");
-			} else {
-				// secondo click su un altro nodo -> creo il collegamento tra i due se non si tratta dello stesso nodo
-				
-				// stesso nodo, non faccio niente
-				if (index == currentNode.getIndex()) return;
-	    		
-				
-	    		// creazione del vertice tra i due nodi
-	    		Graph<CoordinateNode> graph = Singleton.getInstance().getCurrentGraph();
-	    		Node<CoordinateNode> source = graph.getNodeWithValue(currentNode);
-	    		Node<CoordinateNode> target = graph.getNodeWithValue(new CoordinateNode(index, xPos, yPos));
-				
-	    		// se non è stato possibile creare il vertice non faccio nulla
-				if (!graph.insertEdge(source, target)) return;
-	    		
-	    		Arrow edge = new Arrow(currentNode.getxPos(), currentNode.getyPos(), xPos, yPos, 5.0);
-	    		// calcolo il punto finale effettivo considerando il raggio del nodo ed il suo contorno
-	    		edge.calculateEndWithOffset(radius + 3.0);
-	    		edge.setSourceLabel(currentNode.getIndex() + "");
-	    		edge.setTargetLabel(index + "");
-	    		
-	    		
-	    		graphPane.getChildren().add(0, edge);
-	    		
-	    		// comunico che l'arco è stato creato
-	    		Singleton.getInstance().logger.log("Edge from " + edge.getSourceLabel() + " to " +
-	    				edge.getTargetLabel() + " has been created.");
-	    		
-	    		
-	    		// pongo a null currentNode per segnalare che non si stanno più collegando due nodi
-	    		currentNode = null;
-			}
-		});
-		
-		sp.setOnMouseEntered((MouseEvent e) -> {
-			mouseOverNode = true;
-		});
-		
-		sp.setOnMouseExited((MouseEvent e) -> {
-			mouseOverNode = false;
-		});
-		
-		this.graphPane.getChildren().add(sp);
-	}
-	
-	
-	/**
-	 * Ritorna il cerchio che racchiuderà l'indice del nodo
-	 * @return cerchio che indicherà il nodo.
-	 */
-	private Circle createCircle() {
-		
-		Singleton s = Singleton.getInstance();
-		
-		Circle c = new Circle();
-		c.setFill((Color) graphPane.getBackground().getFills().get(0).getFill());
-		c.setStroke(Color.BLACK);
-		c.setStrokeWidth(3);
-		
-		c.setRadius(s.NODE_RADIUS);
-		
-		return c;
-	}
-	
-	
-	/**
-	 * Ritorna il crea il componente grafico testo utilizzando la stringa passata come parametro
-	 * @param s testo da visualizzare
-	 * @return testo creato come componente grafico.
-	 */
-	private Text createText(String s) {
-		Text t = new Text();
-		
-		t.setText(s);
-		t.setFont(new Font(16));
-		t.setBoundsType(TextBoundsType.VISUAL);
-		t.setStroke(Color.BLACK);
-		this.centerText(t);
-		
-		return t;
-	}
-	
-	
-	// http://stackoverflow.com/questions/17437411/how-to-put-a-text-into-a-circle-object-to-display-it-from-circles-center
-	/**
-	 * Centra il testo rispetto al cerchio in cui è inserito
-	 * @param t	testo da centrare
-	 */
-	private void centerText(Text t) {
-		double radius = Singleton.getInstance().NODE_RADIUS;
-		
-		double w = t.getBoundsInLocal().getWidth();
-		double h = t.getBoundsInLocal().getHeight();
-		
-		t.relocate(radius - (w / 2), radius - (h / 2));
-	}
 	
 	
 	@FXML
@@ -277,6 +162,12 @@ public class MainController implements Initializable {
 		
 		Singleton.getInstance().logger.log(filePath);
 	}
+	
+	
+    @FXML
+    void handleMenuItem_RandomGraph(ActionEvent event) {
+    	Singleton.getInstance().logger.log("Random graph");
+    }
 	
 	
 	/**
@@ -303,6 +194,9 @@ public class MainController implements Initializable {
 		// salvo una copia dell'istanza di questo controller nel Singleton
 		// per accedervi nei metodi statici
 		Singleton.getInstance().mainViewController = this;
+		
+		// creo l'oggetto con cui si potrà disegnare il grafo sul pannello
+		Singleton.getInstance().drawingUtility = new GraphDrawer(this.graphPane);
 
 		// imposto lo stato iniziale dei menu
 		setMenuItemState(false);
