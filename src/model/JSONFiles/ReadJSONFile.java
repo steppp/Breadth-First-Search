@@ -3,7 +3,7 @@ package model.JSONFiles ;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.Long ;
+import java.util.Iterator ;
 import model.graphs.*;
 import model.JSONFiles.exceptions.*;
 import model.node.visual.*;
@@ -12,55 +12,62 @@ import org.json.simple.parser.*;
 
 
 //TODO: metodi per generare il file 
-/* Questo file permette di leggere un file con estensione .json 
+/* permette di leggere un file con estensione .json 
    contentente l'implementazione di un grafo. 
-   dati caricati da un file di testo
-    •  strutturato secondo regole stabilite dall’applicazione
-    •  ALGA verifica se il file è valido ed è possibile caricare i dati; in caso
-       contrario notifica all’utente la presenza di errori
 */
 
 public class ReadJSONFile {
 	
 	String fileName ;
-	JSONParser parser = new JSONParser();
+	JSONParser parser;
 	
 	/*
 	 * Costruttore.
-	 * Memorizza il percorso del file da prendere in input.
 	 */
-	public ReadJSONFile(String filePath) throws WrongFileExtension,EmptyFileName {
+	public ReadJSONFile() {
 		
-		if (!filePath.endsWith(".json")) {
-			throw new WrongFileExtension() ;
-		}
+		this.fileName = "" ;
+		this.parser = new JSONParser() ;
+	}
+	
+	/*
+	 * Costruttore:
+	 * memorizza il percorso del file da leggere, che deve essere passato come parametro.
+	 */
+	public ReadJSONFile(String filePath) {
 		
-		if (filePath.isEmpty()){
-			throw new EmptyFileName() ;
-		}
-		
-		this.fileName = filePath ;
+	    this.fileName = filePath ;
+		this.parser = new JSONParser() ;
 	}
 	
     /*
      * Questo metodo ritorna il JSONObject contenuto nel file.
-     * Assumiamo che il file con estensione .json contenga un unico oggetto.
      */
-	public JSONObject getFile () {
+	public JSONObject getFile () throws WrongFileExtension,EmptyFileName {
+		
+		if (!this.fileName.endsWith(".json")) {
+			throw new WrongFileExtension() ;
+		}
+		
+		if (this.fileName.isEmpty()){
+			throw new EmptyFileName() ;
+		}
 		
 		JSONObject jsonObject ;
 		
         try {
 			
-			Object obj = this.parser.parse(new FileReader(fileName)) ;
-			
-			jsonObject = (JSONObject) obj ;
-			
-			return jsonObject ;
-	
+        	FileReader reader = new FileReader(fileName) ;
+        	
+        	Object obj = this.parser.parse(reader) ;
+     		
+     		jsonObject = (JSONObject) obj ;
+     		
+     		return jsonObject ;
+             
 		} catch (FileNotFoundException e) {
             
-			e.printStackTrace(); 
+			e.printStackTrace();
         
 		} catch (IOException e) {
             
@@ -68,15 +75,143 @@ public class ReadJSONFile {
         
 		} catch (ParseException e) {
             
-			System.out.println("Error occurred while parsing " + fileName + " file.");
-			e.printStackTrace();
-	    
+			System.out.println("Il contenuto del file non è corretto");
+			
 		}
         
         return null ;
-        
-	}
+    }
 	
+	/*
+	 * Questo metodo restituisce un grafo a partire da un JSONObject.
+	 * Solleva un'eccezione nel caso in cui l'oggetto non rispetti le regole sintattiche
+	 * notificate dal software.
+	 */
+	public Graph<CoordinateNode> readGraph(JSONObject object) throws InvalidFileObject {
+		
+		Graph<CoordinateNode> G = new Graph<CoordinateNode>() ;
+		
+		if (object.isEmpty() || object.keySet().size() != 2) {		//se l'oggetto è vuoto oppure non ha esattamente due chiavi
+			throw new InvalidFileObject() ;
+		}
+		
+		if(!object.containsKey("vl") || !object.containsKey("el")) {		//se non ci sono entrambe le chiavi vl ed el
+			throw new InvalidFileObject() ;
+		}
+		
+		JSONObject verticesList ;
+		
+		
+		try {
+			verticesList = (JSONObject) object.get("vl") ;
+		} catch (Exception e) {
+			throw new InvalidFileObject() ;
+		}
+		
+		if (verticesList.isEmpty()) {		//se l'insieme dei nodi è vuoto
+			throw new InvalidFileObject() ;
+		}
+		
+		for(Object node : verticesList.keySet()) {		//per ogni valore creo un nodo e lo inserisco nel grafo
+			
+			try {
+				Integer index = Integer.parseInt(node.toString()) ;
+				
+				JSONObject nodeVal = (JSONObject) verticesList.get(node) ;
+				CoordinateNode infoN = new CoordinateNode(index, (double) Integer.parseInt(nodeVal.get("x").toString()),(double) Integer.parseInt(nodeVal.get("y").toString())) ;
+				Node<CoordinateNode> CoNode = (Node<CoordinateNode>) new Node(infoN) ;
+				
+				G.insertNode(CoNode) ;
+			} catch (NumberFormatException e) {		//se i nodi non sono etichettati a valori interi
+				throw new InvalidFileObject() ;
+			}
+		}
+		
+	
+		JSONObject edgesList ;
+		
+		try {
+			edgesList = (JSONObject) object.get("el") ;
+		} catch (Exception e) {
+			throw new InvalidFileObject() ;
+		}
+		
+		if (edgesList.isEmpty()) {		//se l'insieme degli archi è vuoto
+			throw new InvalidFileObject() ;
+		}
+		
+		for (Object edge : edgesList.keySet()) {
+			
+			JSONObject edgeVal = (JSONObject) edgesList.get(edge) ;
+			
+			Node<CoordinateNode> u = null ;
+			Node<CoordinateNode> v = null ;
+			
+	        Iterator<Node<CoordinateNode>> I = G.V().iterator() ;
+			
+			while (I.hasNext()) {		//cerco i nodi corrispondenti ad u e v
+				
+				Node<CoordinateNode> nodeToC = I.next() ; 
+				
+				try {
+					
+					Integer uInd = Integer.parseInt(edgeVal.get("u").toString()) ;
+					Integer vInd = Integer.parseInt(edgeVal.get("v").toString()) ;
+					
+					if (nodeToC.getElement().getIndex() == uInd) {
+						u = nodeToC ;
+					}
+					
+					else if (nodeToC.getElement().getIndex() == vInd) {
+						v = nodeToC;
+					}
+					
+				} catch (NumberFormatException e) {		//se i nodi non sono associati ad un valore intero
+					
+					throw new InvalidFileObject() ;
+					
+				}
+			}
+			
+			G.insertEdge(u, v) ;
+		}
+		
+		return G ;
+	} 
+
+	/*
+	 * Questo è il metodo da invocare nel MainController.
+	 * Richiama tutti gli altri metodi facendo sì che venga restituito il 
+	 * Grafo contenuto nel file .json, gestendo tutti gli eventuali errori.
+	 */
+	public Graph<CoordinateNode> readGraphFromJSONFilereader(){
+		
+     	try {
+			
+     		JSONObject fileObj = getFile() ;
+			
+			if (fileObj != null) {
+				
+				return readGraph(fileObj);
+			}
+			
+			
+		} catch (WrongFileExtension e) {
+			
+			System.out.println("Impossibile aprire lo stream con il file " + this.fileName +".");
+		
+		} catch (EmptyFileName e){
+			
+			System.out.println("Impossibile aprire lo stream con il file " + this.fileName +".");
+		
+		} catch (InvalidFileObject e) {
+			
+			System.out.println("Il contenuto del file non è corretto");
+			}
+     	
+     	return null ;
+	}
+
 	/*
 	 * Questo metodo apre lo stream con il file di input, ne legge 
 	 * e copia il contenuto in una stringa che viene restituita dallo stesso.
@@ -111,172 +246,6 @@ public class ReadJSONFile {
 		
 		return FileC ;
 		
-	}
-	
-
-	//TODO: gestire errori
-	/*
-	 * Questo metodo restituisce un grafo a partire da un JSONObject.
-	 * Solleva un'eccezione nel caso in cui l'oggetto non rispetti le regole sintattiche
-	 * notificate dal software.
-	 */
-	public Graph<CoordinateNode> readGraph(JSONObject object) throws InvalidFileObject {
-		
-		Graph<CoordinateNode> G = new Graph<CoordinateNode>() ;
-		
-		if (object.isEmpty() || object.keySet().size() != 2) {		//se l'oggetto è vuoto oppure non ha esattamente due chiavi
-			throw new InvalidFileObject() ;
-		}
-		
-		if(!object.containsKey("vl") || !object.containsKey("el")) {		//se non ci sono entrambe le chiavi vl ed el
-			throw new InvalidFileObject() ;
-		}
-		
-		JSONObject verticesList ;
-		
-		
-		try {
-			verticesList = (JSONObject) object.get("vl") ;
-		} catch (Exception e) {
-			System.out.println("Impossibile leggere il valore associato alla chiave 'vl' ");
-			System.out.print(e);
-			throw new InvalidFileObject() ;
-		}
-		
-		if (verticesList.isEmpty()) {		//se l'insieme dei nodi è vuoto
-			throw new InvalidFileObject() ;
-		}
-		
-		for(Object node : verticesList.keySet()) {
-			
-			Integer index = Integer.parseInt(node.toString()) ;
-			
-			JSONObject nodeVal = (JSONObject) verticesList.get(node) ;
-			CoordinateNode infoN = new CoordinateNode(index, (double) Integer.parseInt(nodeVal.get("x").toString()),(double) Integer.parseInt(nodeVal.get("y").toString())) ;
-			Node<CoordinateNode> CoNode = (Node<CoordinateNode>) new Node(infoN) ;
-			
-			G.insertNode(CoNode) ;
-			
-		}
-		
-		Object[] nodesEl =  G.V().toArray() ;
-		
-		JSONObject edgesList ;
-		
-		try {
-			edgesList = (JSONObject) object.get("el") ;
-		} catch (Exception e) {
-			System.out.println("Impossibile leggere il valore associato alla chiave 'el' ");
-			System.out.print(e);
-			throw new InvalidFileObject() ;
-		}
-		
-		if (edgesList.isEmpty()) {		//se l'insieme degli archi è vuoto
-			throw new InvalidFileObject() ;
-		}
-		
-		for (Object edge : edgesList.keySet()) {
-			
-			JSONObject edgeVal = (JSONObject) edgesList.get(edge) ;
-			
-			Node<CoordinateNode> u = null ;
-			Node<CoordinateNode> v = null ;
-			
-			for (Object el : nodesEl) {
-				
-				if (el == edgeVal.get("u")) {
-					u = (Node<CoordinateNode>)edgeVal.get("u") ;
-				}
-				
-				else if (el == edgeVal.get("v")) {
-					v = (Node<CoordinateNode>)edgeVal.get("v") ;
-				}
-			}
-			
-			G.insertEdge(u, v) ;
-			
-			if (!G.insertEdge(u,v)) {
-				System.out.println("impossibile creare l'arco tra " + u + " e " +  v);
-			}
-			
-		}
-		
-		
-		
-		return G ;
-	} 
-
-	/*
-	 * Qeusto metodo verifica se l'oggetto passato come parametro rappresenta una 
-	 * stringa di valori interi. In caso positivo restituisce l'intero in questione.
-	 * In caso negativo restituisce null.
-	 */
-	public Integer isIntegerString(JSONObject obj) {
-		
-		Integer n ;
-		String str = obj.toString() ;
-		
-	    if (str == null) {
-	        n = null ;
-	    }
-	    
-	    int length = str.length();
-	    
-	    if (length == 0) {
-	    	n = null;
-	    }
-	    int i = 0;
-	    if (str.charAt(0) == '-') {
-	        if (length == 1) {
-	        	n = null;
-	        }
-	        i = 1;
-	    }
-	    for (; i < length; i++) {
-	        char c = str.charAt(i);
-	        if (c < '0' || c > '9') {
-	        	n = null;
-	        }
-	    }
-	    
-	    try{
-	    		n = Integer.parseInt(str) ;
-	    } catch (NumberFormatException e) {
-	    		n = null ;
-	    }
-	    
-	    return n ;
-		
-		
-	}
-	
-	
-	public static void main(String[] args ) {
-		
-		ReadJSONFile reader ;
-		
-		try {
-			reader = new ReadJSONFile("/home/melania/Scrivania/UNI BOH/INFORMATICA/II SEMESTRE/ALGORITMI/ALGA/examples.json") ;
-		    System.out.println("Il file è stato aperto con successo.");
-		} catch (WrongFileExtension exc1) {
-			System.out.println(exc1);
-			reader = null ;
-			System.out.println("L'estensione del file selezionato non è corretta. Scegliere un file con estensione .json");
-		} catch (EmptyFileName exc2) {
-			System.out.println(exc2);
-			reader = null ;
-			System.out.println("Il percorso del file selezionato è vuoto. Scegliere un file con un percorso diverso");
-		}
-		
-		System.out.println("Il contenuto del file è il seguente: ");
-		System.out.println(reader.getFile().toString());
-		
-		System.out.println("Il grafo rappresentato è: ");
-		try {
-			reader.readGraph(reader.getFile()).print();
-		} catch (InvalidFileObject e) {
-			System.out.println(e);
-		}
 	}
 	
 }
