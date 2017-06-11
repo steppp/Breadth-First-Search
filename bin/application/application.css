@@ -20,3 +20,9 @@
 .context-menu .label:hover {
     -fx-background-color: derive(#1d1d1d,20%);
 }
+
+.scrollPaneCell {
+	-fx-spacing: 10;
+	-fx-padding: 5;
+	-fx-font-weight: bold;
+}

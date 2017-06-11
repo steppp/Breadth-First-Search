@@ -36,8 +36,12 @@ public class ApplicationSettingsController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		
 		// imposto i valori dello slider
-		speedSlider.setMax(1.0);
-		speedSlider.setMin(0.0);
+		speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+			Integer interval = 5100 - (5000 * newVal.intValue() / 100);
+			Singleton.getInstance().logger.log(interval.toString());
+			Singleton.getInstance().animPrefs.setInterval(interval);
+		});
+
 		speedSlider.setMajorTickUnit(0.05);
 		speedSlider.setValue(0.5);
 		

@@ -23,7 +23,7 @@ public class GraphVisiter extends Thread {
 	
 	// la classe sfrutta i Thread per gestire la sospensione e la ripresa dell'esecuzione dell'algoritmo
 	// VEDI QUI -> http://www.codejava.net/java-core/concurrency/how-to-use-threads-in-java-create-start-pause-interrupt-and-join
-	// probabilmente, quando il thread viene sospeso con this.interrupt(), l'esecuzione torna al thread principale
+	// quando il thread viene sospeso con this.interrupt(), l'esecuzione torna al thread principale
 	// da lì sarà poi possibile riprendere l'esecuzione del thread BFS_VISIT
 	
 	Graph<CoordinateNode> g;
@@ -178,6 +178,11 @@ public class GraphVisiter extends Thread {
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
+				}
+				
+				// -------- MOSTRARE IL VETTORE VISITED ----------
+				if (showVisited != null) {
+					showVisited.apply(visited);
 				}
 			}			
 		}

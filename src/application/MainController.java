@@ -200,6 +200,9 @@ public class MainController implements Initializable {
 
 		// imposto lo stato iniziale dei menu
 		setMenuItemState(false);
+
+		scrollPaneParents.setFitToWidth(true);
+		scrollPaneVisited.setFitToWidth(true);
 	}
 	
 	
@@ -297,6 +300,9 @@ public class MainController implements Initializable {
     	
     	// resetto il colore originale del grafo
     	resetGraphColor(this.graphPane, Color.BLACK);
+    	
+    	// imposto i controlli indicando che l'animazione non sta proseguendo
+    	setMenuItemState(false);
     }
     
     
@@ -640,12 +646,15 @@ public class MainController implements Initializable {
     	
     	ScrollPane visitedScrollPane = s.mainViewController.scrollPaneVisited;
     	VBox visitedVBox = s.mainViewController.vBoxVisited;
+    	visitedVBox.getChildren().clear();
+    	
     	final double width = visitedScrollPane.getWidth();
     	final double cellHeight = visitedScrollPane.getHeight() / 10;
     	
     	for (Integer i = 0; i < visited.length; i++) {
         	
         	HBox cell = new HBox();
+        	cell.getStyleClass().add("scrollPaneCell");
     		
     		// incremento l'altezza del VBox
     		visitedVBox.setPrefHeight(visitedVBox.getHeight() + cellHeight);
@@ -654,7 +663,7 @@ public class MainController implements Initializable {
         	cell.setPrefSize(width, cellHeight);
         	cell.getChildren().add(new Text(i.toString()));
         	cell.getChildren().add(new Text(visited[i].toString()));
-        	cell.setAlignment(Pos.CENTER);
+        	cell.setAlignment(Pos.CENTER_LEFT);
         	
         	visitedVBox.getChildren().add(cell);
     	}
