@@ -1,25 +1,45 @@
 package model.randomGraph ;
 
 import java.util.Random ;
-import java.util.Iterator;
+import model.node.visual.*;
 import model.graphs.Graph;
 import model.graphs.Node;
 
-//TODO:parametrizza
-//TODO:verificare perchè AlreadyExist restituisce sempre false 
+//TODO: scelta nodi utente max 10?
 public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	
-	Graph<Integer> G ;
+	Graph<CoordinateNode> G ;
 	Integer nodesNumber ;
 	
+	double posX[] = {440.0, 293.0, 220.0, 220.0, 293.0, 440.0, 586.0, 659.0, 659.0, 586.0} ;
+	double posY[] = {69.0, 106.0, 206.0, 274.0, 373.0, 411.0, 373.0, 274.0, 206.0, 106.0} ;
+	
 
+	/*
+	 * Costruttore che genera un grafo casuale
+	 */
 	public randomGraph() {
-		this.G = new Graph<Integer>() ;	
+		this.G = new Graph<CoordinateNode>() ;	
 		this.nodesNumber = 0 ;
+		this.randomNodes();
+		this.randomEdges();
+	}
+	
+	/*
+	 * Costruttore che genera un grafo casuale di n nodi(A SCELTA DELL'UTENTE)
+	 */
+	public randomGraph(int n) {
+		this.G = new Graph<CoordinateNode>() ;
+		this.nodesNumber = 0 ;
+		this.nNodes(n) ;
+		this.randomEdges();
+		
 	}
 		
-	//TODO: escludere il caso in cui ci sono 0 nodi
-	//Crea un numero casuale di nodi (MAX 10)	
+    /*
+	 * Crea un numero casuale di nodi (MAX 10) etichettati con numeri interi da 0 a 10	
+	 * Assumiamo che venga applicato ad un grafo di Interi
+	 */
 	public void randomNodes() {
 		
 		Random random = new Random() ;
@@ -28,106 +48,181 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		int n = 10 ;
 		int m = random.nextInt(n) ;
 		
-		while (m == 0) {
+		while (m <= 1) {
 			m = random.nextInt(n) ;
+		}
+		
+		double posX = this.posX[0] ;
+		double posY = this.posY[0] ;
+		
+		if(m == 4) {
+			
+			posX = this.posX[2] ;
+			posY = this.posY[2] ;
+		}
+		
+		else if(m == 8) {
+			
+			posX = this.posX[1] ;
+			posY = this.posY[1] ;
 		}
 		
 		for (i=0;i<m;i++) {
 			
-			Node<Integer> x = new Node<Integer>(i) ;
+			CoordinateNode coN = new CoordinateNode(i, posX, posY ) ;
+			
+			Node<CoordinateNode> x = (Node<CoordinateNode>) new Node(coN) ;
 		
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
+			
+			System.out.print("Appena creato il nodo " + 
+			                  coN.getIndex() + 
+			                  " in posizione " + 
+			                  coN.getxPos() +
+			                  "," +
+			                  coN.getyPos());
+			System.out.println(" ");
+			
+			if (i != m-1) {		//aggiorno la posizione del prossimo nodo
+				posX = this.posX[getDelta(i+1,m) + i + 1] ;
+				posY = this.posY[getDelta(i+1,m) + i + 1] ;
+			}
+			
 		}
 		
 	}
+	
+	/*
+	 * Crea n nodi 
+	 */
+	public boolean nNodes(int n){
 		
+		Integer i ;
+		
+		double posX = 0.0 ;
+		double posY = 0.0 ;
+
+        if (n>1) {
+			for (i=0;i<n;i++) {
+				
+				Node<CoordinateNode> x =(Node<CoordinateNode>) new Node<CoordinateNode>(new CoordinateNode(i, posX, posY)) ;
+			
+				this.G.insertNode(x);
+				this.nodesNumber ++ ;
+				
+			}
+			return true ;
+		}
+		return false ;
+	}
+		
+	/*
+	 * Crea un numero casuale di archi(MAX 2n)
+	 * Assumiamo che venga applicato ad un grafo di Interi
+	 */
 	public void randomEdges(){
 		
 		Random random1 = new Random() ;
+		
+		boolean tmp ;
 		
 		if (this.nodesNumber > 1) {
 			
 			
 			int n = this.nodesNumber +  random1.nextInt(this.nodesNumber) ;
 			
-			while (n == 0) {
-				n = random1.nextInt(this.nodesNumber) ;
-			}
-			
-			Integer[] nodesEl = getNodesArray() ;
+			Object[] nodesEl =  this.G.V().toArray() ; ;
 			
 			Integer i ;
 			
-			
 		    for (i=0;i<n;i++){
 		            
-		            Node<Integer> u = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
-					Node<Integer> v = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
-					
-					if (u.getElement() == v.getElement()) {
-						
-						while(u.getElement() == v.getElement()) {
-							
-							u = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
-							v = (Node<Integer>) new Node(nodesEl[random1.nextInt(this.nodesNumber - 1)]) ;
-							
+		    	Node<CoordinateNode> u = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+		    	Node<CoordinateNode> v = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+		    	
 
-					     }
-					}
-					
-					if (alreadyExist(u,v)) {
-						
-						Integer tmp = u.getElement() ;
-						u = new Node(v.getElement()) ;
-						v = new Node(tmp) ;
-						
-					}
-					
-					if (!alreadyExist(u,v)) {
-						
-						this.G.insertEdge(u, v) ;
-						
-			        }
+		    	tmp = this.G.insertEdge(u, v) ;
+		    	
+		    	if (!tmp ) {		//se non è stato possibile creare l'arco faccio un nuovo tentativo
+		    		
+		    		u = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+			    	v = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+			    	
+			    	
+			    	this.G.insertEdge(u, v) ;
+			    	
+		    	}
+
+		    	this.G.insertEdge(u, v) ;
 		    }
 		}
 	}
-
 	
-	public Boolean alreadyExist(Node<Integer> x, Node<Integer> y) {
+
+	@Override
+	public void print() {
+		this.G.print();
+	}
+
+	/*
+	 * Questo metodo resituisce lo spiazzamento della posizione che
+	 * un nodo deve occupare. 
+	 * Prende in input l'indice del nodo la cui posizione stiamo aggiornando, e
+	 * il numero di nodi totali.
+	 */
+	public int getDelta(int index, int maximum) {
 		
-		Iterator<Node<Integer>> I = this.G.adj(x).iterator() ;
-		
-		Boolean tmp = false ;
-		
-		while (I.hasNext()) {
-			
-			if (I.next() == y) {
-				tmp = true ;
-			}
-			
+		if (maximum == 2 ) {
+			return 4 ;
 		}
 		
-		return tmp ;
+		else if (maximum == 3 || maximum == 4) {
+			if (index < 2) {
+				return 2 ;
+			} else {
+				return 5 ;
+			}
+		}
+		
+		else if (maximum == 5) {
+			return maximum ;
+		}
+		
+		else if (maximum == 6) {
+			if (index < 5) {
+				return 2 ;
+			} else {
+				return 4 ;
+			}
+		}
+		
+		else if (maximum == 7 || maximum == 8) {
+			if (index < 4) {
+				return 1 ;
+			} else {
+				return 2 ;
+			}
+		}
+		
+		else if (maximum == 9) {
+			if (index < 5) {
+				return 0 ;
+			} else {
+				return 1 ;
+			}
+		}
+		
+		return 0 ; //se in totale i nodi sono 10
+		
 	}
 	
-	public Integer[] getNodesArray() {
-      
-		Integer[] A = new Integer[this.nodesNumber] ;
+	public static void main (String[] args) {
 		
-      Iterator<Node<Integer>> I = this.G.V().iterator() ;
+		randomGraph<CoordinateNode> r1 = new randomGraph<CoordinateNode>() ;
 		
-	    Integer i = 0 ;
-	    
-	    while (I.hasNext()) {
-	    	
-	    	A[i] = I.next().getElement() ;
-	    	i++ ;
-	    	
-	    }
-	    
-	    return A ;
+		r1.print();
 	}
-
+	
 }
 
