@@ -1,6 +1,6 @@
 # Breadth-First Search Algorithm Visualization
 
-Programma scritto in Java per la visualizzazione dell'algoritmo di ricerca in ampiezza sui grafi. È possibile disegnare dei grafi **a piacimento**, oppure crearne alcuni in **modo casuale** e vedere come viene eseguito l'algoritmo [Breadth-First Search](https://it.wikipedia.org/wiki/Ricerca_in_ampiezza). È possibile anche **salvare** i grafi creati in un file *json*, per poi caricarli in un secondo momento. 
+Programma scritto in Java per la visualizzazione dell'algoritmo di ricerca in ampiezza sui grafi. È possibile disegnare dei grafi **a piacimento**, oppure crearne alcuni in **modo casuale** e vedere come viene eseguito l'algoritmo [Breadth-First Search](https://it.wikipedia.org/wiki/Ricerca_in_ampiezza) sui grafi. È possibile anche **salvare** i grafi creati in un file *json*, per poi caricarli in un secondo momento. 
 
 
 ## Funzionalità
