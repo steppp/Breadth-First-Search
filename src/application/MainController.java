@@ -41,10 +41,12 @@ import model.graphs.Edge;
 import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
+import model.randomGraph.RandomGraph;
 import singleton.Singleton;
 import utility.AnimationSettings;
 import utility.GraphDrawer;
 import utility.Logger;
+import model.JSONFiles.JSONFileReader;
 import model.arrow.Arrow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -147,16 +149,32 @@ public class MainController implements Initializable {
 		// il file che verrà scelto sarà salvato nella variabile file
 		File file = fc.showOpenDialog(graphPane.getScene().getWindow());
 		
-		// TODO: - Gestire l'apertura del file: "pulire" il grafo già esistente e validare il file appena aperto
-		String filePath = file.getAbsolutePath();
+		// se non è stato scelto alcun file termino il metodo
+		if (file == null) {
+			return;
+		}
 		
-		Singleton.getInstance().logger.log(filePath);
+		// pulisco la scena
+		this.handleMenuItem_Delete(null);
+		
+		String filePath = file.getAbsolutePath();
+
+		// carico il grafo dal file json
+    	JSONFileReader jsonReader = new JSONFileReader(filePath);
+    	Graph<CoordinateNode> g = jsonReader.readGraphFromJSONFilereader();
+    	
+    	// imposto il grafo come grafo corrente e lo disegno
+    	Singleton.getInstance().setCurrentGraph(g);
+    	Singleton.getInstance().drawingUtility.drawGraph(g);
 	}
 	
 	
     @FXML
     void handleMenuItem_RandomGraph(ActionEvent event) {
-    	Singleton.getInstance().logger.log("Random graph");
+    	RandomGraph<CoordinateNode> rg = new RandomGraph<CoordinateNode>();
+    	
+    	Singleton.getInstance().drawingUtility.drawGraph(rg.getGraph());
+    	Singleton.getInstance().setCurrentGraph(rg.getGraph());
     }
 	
 	
@@ -166,9 +184,7 @@ public class MainController implements Initializable {
 	 */
 	private void configureFileChooser(final FileChooser fc) {
 		fc.setTitle("Open graph from json file");
-		fc.getExtensionFilters().addAll(
-				new FileChooser.ExtensionFilter("All files", "*.*"),
-				new FileChooser.ExtensionFilter("JSON", "*.json"));
+		fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
 	}
 
 
@@ -548,6 +564,9 @@ public class MainController implements Initializable {
     	
     	// imposto lo stato dei controlli
     	setMenuItemState(true);
+    	
+    	// resetto il colore originale del grafo
+    	resetGraphColor(s.mainViewController.graphPane, Color.BLACK);
 		
 		// creo l'oggetto GraphVisiter e setto il nome del thread 
 		GraphVisiter bfs = new GraphVisiter(currentGraph, root);

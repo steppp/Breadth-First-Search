@@ -6,7 +6,7 @@ import model.graphs.Graph;
 import model.graphs.Node;
 
 //TODO: scelta nodi utente max 10?
-public class randomGraph<T extends Comparable<T>> extends Graph<T>{
+public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	
 	Graph<CoordinateNode> G ;
 	Integer nodesNumber ;
@@ -18,7 +18,7 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	/*
 	 * Costruttore che genera un grafo casuale
 	 */
-	public randomGraph() {
+	public RandomGraph() {
 		this.G = new Graph<CoordinateNode>() ;	
 		this.nodesNumber = 0 ;
 		this.randomNodes();
@@ -28,13 +28,22 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	/*
 	 * Costruttore che genera un grafo casuale di n nodi(A SCELTA DELL'UTENTE)
 	 */
-	public randomGraph(int n) {
+	public RandomGraph(int n) {
 		this.G = new Graph<CoordinateNode>() ;
 		this.nodesNumber = 0 ;
 		this.nNodes(n) ;
 		this.randomEdges();
 		
 	}
+	
+	/**
+	 * Ritorna il grafo creato.
+	 * @return grafo creato.
+	 */
+	public Graph<CoordinateNode> getGraph() {
+		return G;
+	}
+	
 		
     /*
 	 * Crea un numero casuale di nodi (MAX 10) etichettati con numeri interi da 0 a 10	
@@ -71,18 +80,18 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			
 			CoordinateNode coN = new CoordinateNode(i, posX, posY ) ;
 			
-			Node<CoordinateNode> x = (Node<CoordinateNode>) new Node(coN) ;
+			Node<CoordinateNode> x = new Node<CoordinateNode>(coN) ;
 		
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
 			
-			System.out.print("Appena creato il nodo " + 
-			                  coN.getIndex() + 
-			                  " in posizione " + 
-			                  coN.getxPos() +
-			                  "," +
-			                  coN.getyPos());
-			System.out.println(" ");
+//			System.out.print("Appena creato il nodo " + 
+//			                  coN.getIndex() + 
+//			                  " in posizione " + 
+//			                  coN.getxPos() +
+//			                  "," +
+//			                  coN.getyPos());
+//			System.out.println(" ");
 			
 			if (i != m-1) {		//aggiorno la posizione del prossimo nodo
 				posX = this.posX[getDelta(i+1,m) + i + 1] ;
@@ -121,6 +130,7 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	 * Crea un numero casuale di archi(MAX 2n)
 	 * Assumiamo che venga applicato ad un grafo di Interi
 	 */
+	@SuppressWarnings("unchecked")
 	public void randomEdges(){
 		
 		Random random1 = new Random() ;
@@ -215,13 +225,6 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		
 		return 0 ; //se in totale i nodi sono 10
 		
-	}
-	
-	public static void main (String[] args) {
-		
-		randomGraph<CoordinateNode> r1 = new randomGraph<CoordinateNode>() ;
-		
-		r1.print();
 	}
 	
 }

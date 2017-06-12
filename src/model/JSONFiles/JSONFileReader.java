@@ -16,7 +16,7 @@ import org.json.simple.parser.*;
    contentente l'implementazione di un grafo. 
 */
 
-public class ReadJSONFile {
+public class JSONFileReader {
 	
 	String fileName ;
 	JSONParser parser;
@@ -24,7 +24,7 @@ public class ReadJSONFile {
 	/*
 	 * Costruttore.
 	 */
-	public ReadJSONFile() {
+	public JSONFileReader() {
 		
 		this.fileName = "" ;
 		this.parser = new JSONParser() ;
@@ -34,7 +34,7 @@ public class ReadJSONFile {
 	 * Costruttore:
 	 * memorizza il percorso del file da leggere, che deve essere passato come parametro.
 	 */
-	public ReadJSONFile(String filePath) {
+	public JSONFileReader(String filePath) {
 		
 	    this.fileName = filePath ;
 		this.parser = new JSONParser() ;
@@ -43,7 +43,7 @@ public class ReadJSONFile {
     /*
      * Questo metodo ritorna il JSONObject contenuto nel file.
      */
-	public JSONObject getFile () throws WrongFileExtension,EmptyFileName {
+	public JSONObject getFile () throws WrongFileExtension, EmptyFileName {
 		
 		if (!this.fileName.endsWith(".json")) {
 			throw new WrongFileExtension() ;
@@ -119,7 +119,7 @@ public class ReadJSONFile {
 				
 				JSONObject nodeVal = (JSONObject) verticesList.get(node) ;
 				CoordinateNode infoN = new CoordinateNode(index, (double) Integer.parseInt(nodeVal.get("x").toString()),(double) Integer.parseInt(nodeVal.get("y").toString())) ;
-				Node<CoordinateNode> CoNode = (Node<CoordinateNode>) new Node(infoN) ;
+				Node<CoordinateNode> CoNode = new Node<CoordinateNode>(infoN) ;
 				
 				G.insertNode(CoNode) ;
 			} catch (NumberFormatException e) {		//se i nodi non sono etichettati a valori interi
