@@ -24,8 +24,8 @@ Programma scritto in Java per la visualizzazione dell'algoritmo di ricerca in am
     * andando su **File > Apri..** per aprirne uno da file;
 3. modificare il grafo finché non si ottiene il risultato desiderato;
 4. cliccare su **Animazione > Impostazioni** e:
-    * settare il nodo radice,
-    * impostare la velocità dell'animazione (valida solamente per l'animazione automatica);
+   1. settare il nodo radice,
+   2. impostare la velocità dell'animazione (valida solamente per l'animazione automatica);
 5. sempre dal menu **Animazione** scegliere **Avvia..** e poi:
     * **Avvia** se si vuole assistere ad un'animazione automatica,
     * **Passo-passo** se si vuole controllare manualmente l'animazione;
