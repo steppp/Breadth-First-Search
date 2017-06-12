@@ -3,13 +3,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -20,31 +21,46 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_OpenFile" text="Open.." />
-                  <MenuItem mnemonicParsing="false" text="Random graph.." />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Save" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_SaveAs" text="Save as.." />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RandomGraph" text="Random graph.." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Close" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
+          <Menu mnemonicParsing="false" text="Modifica">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Delete" text="Delete" />
+              <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Delete" text="Elimina" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Debug">
+            <Menu mnemonicParsing="false" text="Animazione">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Debug" text="Print graph" />
+                  <Menu mnemonicParsing="false" text="Avvia..">
+                    <items>
+                      <MenuItem id="run" fx:id="runMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Avvia" />
+                        <MenuItem id="stepbystep" fx:id="sbsMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Passo-passo" />
+                    </items>
+                  </Menu>
+                  <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_Stop" text="Stop" />
+                  <MenuItem fx:id="stepMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_NextStep" text="Prossimo passo" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_AnimationSettings" text="Impostazioni" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Debug">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Debug" text="Mostra il grafo" />
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Aiuto">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_About" text="Informazioni" />
+            </items>
+          </Menu>
         </menus>
       </MenuBar>
    </top>
    <center>
-      <SplitPane dividerPositions="0.6918547595682041" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.7507360157016683" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
             <SplitPane dividerPositions="0.7052631578947368" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
               <items>
@@ -55,26 +71,33 @@
                   </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <TextArea fx:id="outputTextArea" prefHeight="195.0" prefWidth="703.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TextArea fx:id="outputTextArea" editable="false" prefHeight="195.0" prefWidth="703.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <font>
-                              <Font name="Menlo Regular" size="13.0" />
+                              <Font name="Menlo Regular" size="10.0" />
                            </font>
                         </TextArea>
                      </children>
                   </AnchorPane>
               </items>
             </SplitPane>
-            <SplitPane dividerPositions="0.706766917293233" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+            <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <Text fx:id="coordinateLabel" layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="266.21875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="29.78125" AnchorPane.topAnchor="14.431640625" />
+                        <Text fx:id="coordinateLabel" layoutX="14.0" layoutY="26.568359375" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.21875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                        <ScrollPane fx:id="scrollPaneVisited" hbarPolicy="NEVER" layoutX="15.0" layoutY="72.0" prefHeight="379.0" prefWidth="100.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="72.0">
+                           <content>
+                              <VBox fx:id="vBoxVisited" prefHeight="377.0" prefWidth="100.0" />
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fx:id="scrollPaneParents" layoutX="155.0" layoutY="72.0" prefHeight="380.0" prefWidth="100.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="71.0">
+                           <content>
+                              <VBox fx:id="vBoxParents" prefHeight="378.0" prefWidth="98.0" />
+                           </content>
+                        </ScrollPane>
+                        <Text layoutX="15.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nodi visitati" wrappingWidth="99.21875" AnchorPane.leftAnchor="15.0" />
+                        <Text layoutX="135.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Vettore dei padri" wrappingWidth="103.21875" AnchorPane.rightAnchor="11.78125" />
                      </children></AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                     <children>
-                        <TextField fx:id="pseudocodeTextArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
               </items>
             </SplitPane>
         </items>

@@ -1,12 +1,10 @@
 package model.arrow;
 
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import singleton.Singleton;
 import utility.Trigonometry;
 
 public class Arrow extends Group {
@@ -146,9 +144,13 @@ public class Arrow extends Group {
 	
 	
 	public void setColor(Color c) {
-		for (Node n : this.getChildren()) {
-			((Shape) n).setFill(c);
+		if (this.indicator != null) {
+			this.indicator.setFill(c);
+			this.indicator.setStroke(c);
 		}
+		
+		this.line.setFill(c);
+		this.line.setStroke(c);
 	}
 	
 	
