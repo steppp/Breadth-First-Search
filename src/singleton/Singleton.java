@@ -34,7 +34,7 @@ public class Singleton {
 	}
 	
 	// --------- OTHER DATA ------------
-	public final double NODE_RADIUS = 20.0;
+	public static final double NODE_RADIUS = 20.0;
 	
 	
 	public boolean graphLoaded;
@@ -86,7 +86,7 @@ public class Singleton {
 	public GraphDrawer drawingUtility = null;
 	
 
-	
+	public static final String ABOUT_WEB_PAGE = "https://github.com/steppp/Breadth-First-Search/";
 	
 	
 	

@@ -35,16 +35,19 @@ public class ApplicationSettingsController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
+		speedSlider.setOnMouseReleased((event) -> {
+			this.logSpeed();
+		});
+		
 		// imposto i valori dello slider
 		speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-			Integer interval = 5100 - (5000 * newVal.intValue() / 100);
-			Singleton.getInstance().logger.log(interval.toString());
-			Singleton.getInstance().animPrefs.setInterval(interval);
+			this.setAnimationInterval(newVal.longValue());
 		});
 
 		speedSlider.setMajorTickUnit(0.05);
-		speedSlider.setValue(0.5);
-		
+		speedSlider.setValue(50);
+		this.setAnimationInterval(50);
+		this.logSpeed();
 		
 		// imposto le opzioni del ChoiceBox
 		Set<Node<CoordinateNode>> s = Singleton.getInstance().getCurrentGraph().V();
@@ -68,6 +71,7 @@ public class ApplicationSettingsController implements Initializable {
 			}
 			
 			ApplicationSettingsController.setRoot(rootChoiceBox.getValue());
+			ApplicationSettingsController.logRoot(rootChoiceBox.getValue());
 		}
 			
 		// imposto il listener per l'evento del ChoiceBox se l'elemento selezionate cambia
@@ -76,13 +80,29 @@ public class ApplicationSettingsController implements Initializable {
 
 				@Override
 				public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-					// http://www.baeldung.com/java-8-double-colon-operator
 					// imposto il nodo radice da cui partirà l'algoritmo
-					Function<Integer, Void> setRoot = ApplicationSettingsController::setRoot;
-					setRoot.apply(newValue.intValue());
+					ApplicationSettingsController.setRoot(newValue.intValue());
+					ApplicationSettingsController.logRoot(newValue.intValue());
 				}
 				
 			});
+	}
+	
+	
+	private void setAnimationInterval(long percentage) {
+		long interval = 5100 - (5000 * percentage / 100);
+		Singleton.getInstance().animPrefs.setInterval(interval);
+	}
+	
+	
+	private void logSpeed() {
+		Singleton.getInstance().logger.log("Velocità dell'animazione impostata al " +
+				(int) speedSlider.getValue() + "%"); 
+	}
+	
+	
+	private static void logRoot(Integer rootIndex) {
+		Singleton.getInstance().logger.log("Nodo radice impostato sul nodo con indice " + rootIndex.toString());
 	}
 	
 	

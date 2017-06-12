@@ -1,15 +1,15 @@
 package application;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Function;
 
 import bfs.GraphVisiter;
 import javafx.event.ActionEvent;
@@ -21,7 +21,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -35,11 +34,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBoundsType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.graphs.Edge;
@@ -304,6 +300,44 @@ public class MainController implements Initializable {
     	// imposto i controlli indicando che l'animazione non sta proseguendo
     	setMenuItemState(false);
     }
+	
+	
+    @FXML
+    void handleMenuItem_About(ActionEvent event) {
+    	try {
+        	MainController.openWebPage(new URL(Singleton.ABOUT_WEB_PAGE));
+    	} catch (Exception e) {
+    		e.printStackTrace();
+			Singleton.getInstance().logger.log("Impossibile aprire il browser. Aprirlo manualmente ed andare all'indirizzo "
+					+ Singleton.ABOUT_WEB_PAGE);
+    	}
+    }
+    
+    
+    /**
+     * Apre la pagina web indicata dal parametro uri nel browser predefinito
+     * @param uri pagina web da aprire.
+     * @throws Exception se l'uri non è valido.
+     */
+    private static void openWebPage(URI uri)
+    					throws Exception {
+    	Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+    	
+    	if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			desktop.browse(uri);
+    	}
+    }
+    
+    
+    /**
+     * Apre la pagina web indicata dal parametro url nel browser predefinito.
+     * @param url pagina web da aprire.
+     * @throws Exception se l'url non è valido.
+     */
+    private static void openWebPage(URL url)
+    					throws Exception {
+		openWebPage(url.toURI());
+    }
     
     
     /**
@@ -356,7 +390,7 @@ public class MainController implements Initializable {
 							s.getCurrentGraph().getNodeWithValue(currentNode.getElement()),
 							s.getCurrentGraph().adj(currentNode));
 			
-			Singleton.getInstance().logger.log(">> On the node " + currentNode.getElement().getIndex());
+			Singleton.getInstance().logger.log(">> Mi trovo sul nodo con indice " + currentNode.getElement().getIndex());
 			return null;
 		});
 		
@@ -364,9 +398,9 @@ public class MainController implements Initializable {
 		bfs.setExaminingEdge((edge) -> {
 			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.DARKGRAY);
 			
-			Singleton.getInstance().logger.log("Examining edge from "
+			Singleton.getInstance().logger.log("Esamino l'arco tra il nodo con indice "
 					+ edge.getSource().getElement().getIndex()
-					+ " to " + edge.getTarget().getElement().getIndex());
+					+ " e quello con indice " + edge.getTarget().getElement().getIndex());
 			return null;
 		});
 		
@@ -383,7 +417,7 @@ public class MainController implements Initializable {
 			if (s.currentNodeAndList.getValue().isEmpty())
 				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
 			
-			Singleton.getInstance().logger.log("++ Node " + edge.getTarget().getElement().getIndex() + " inserted");
+			Singleton.getInstance().logger.log("++ Nodo con indice " + edge.getTarget().getElement().getIndex() + " inserito");
 			return null;
 		});
 		
@@ -399,11 +433,12 @@ public class MainController implements Initializable {
 			if (s.currentNodeAndList.getValue().isEmpty())
 				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
 			
-			Singleton.getInstance().logger.log("-- Node " + edge.getTarget().getElement().getIndex() + " not inserted");
+			Singleton.getInstance().logger.log("-- Nodo con indice " + edge.getTarget().getElement().getIndex() + " non inserito");
 			return null;
 		});
 		
-		
+
+		// http://www.baeldung.com/java-8-double-colon-operator
 		bfs.setShowVisited(MainController::showVisited);
 		
 		
@@ -412,7 +447,7 @@ public class MainController implements Initializable {
 			if (Singleton.getInstance().currentNodeAndList != null)
 				paintNode(Singleton.getInstance().getCurrentGraph(), Singleton.getInstance().currentNodeAndList.getKey(), Color.GREEN);
 			
-			Singleton.getInstance().logger.log("Animation ended!");
+			Singleton.getInstance().logger.log("Animazione terminata!");
 			setMenuItemState(false);
 			
 			return null;
@@ -517,9 +552,10 @@ public class MainController implements Initializable {
     	completeAnimationSetup(bfs);
     	
     	// creo le celle e le inserisco nel VBox apposito
-    	Boolean[] temp = new Boolean[s.getCurrentGraph().V().size()];
+    	Object[] temp = new Boolean[s.getCurrentGraph().V().size()];
     	Arrays.fill(temp, false);
     	createCells(temp);
+    	createCells(new Integer[temp.length]);
     	
     	//avvio il thread
     	bfs.start();
@@ -611,61 +647,75 @@ public class MainController implements Initializable {
     }
     
     
-    // TODO: convertire questo metodo per poter essere usato anche con il vettore dei padri
     /**
      * Visualizza il vettore dei nodi visitati sull'interfaccia
-     * @param visited array dei nodi visitati.
+     * @param array array dei nodi visitati.
      * @return Void
      */
-    public static Void showVisited(final Boolean[] visited) {
+    public static Void showVisited(final Object[] array) {
     	Singleton s = Singleton.getInstance();
-    	VBox visitedVBox = s.mainViewController.vBoxVisited;
+    	VBox vBox = null;
+    	
+    	// vedi metodo sottostante
+    	if (array instanceof Boolean[]) {
+    		vBox = s.mainViewController.vBoxVisited;
+    	} else {
+    		vBox = s.mainViewController.vBoxParents;
+    	}
     	
     	HBox cell = null;
 
     	// itero su tutti gli elementi del VBox
-    	for (Integer i = 0; i < visited.length; i++) {
+    	for (Integer i = 0; i < array.length; i++) {
     		
     		// imposto il secondo componente della cella come visitato
-    		if (visited[i]) {
-        		cell = (HBox) visitedVBox.getChildren().get(i);
-        		((Text) cell.getChildren().get(1)).setText(visited[i].toString());
-    		}
+    		cell = (HBox) vBox.getChildren().get(i);
+    		((Text) cell.getChildren().get(1)).setText(array[i] != null ? array[i].toString() : "null");
     	}
     	
     	return null;
     }
     
-    // TODO: convertire questo metodo per poter essere usato anche con il vettore dei padri
+    
     /**
      * Crea le celle per visualizzare il vettore visited e le inizializza.
-     * @param visited array che contiene le informazioni sui nodi visitati.
+     * @param array array che contiene le informazioni sui nodi visitati.
      */
-    private static void createCells(Boolean[] visited) {
+    private static void createCells(Object[] array) {
     	Singleton s = Singleton.getInstance();
+    	ScrollPane sp = null;
+    	VBox vBox = s.mainViewController.vBoxVisited;
     	
-    	ScrollPane visitedScrollPane = s.mainViewController.scrollPaneVisited;
-    	VBox visitedVBox = s.mainViewController.vBoxVisited;
-    	visitedVBox.getChildren().clear();
+    	// ho passato il vettore visited
+    	if (array instanceof Boolean[]) {
+    		sp = s.mainViewController.scrollPaneVisited;
+    		vBox = s.mainViewController.vBoxVisited;
+    	} else {
+    		// ho passato il vettore dei padri
+    		sp = s.mainViewController.scrollPaneParents;
+    		vBox = s.mainViewController.vBoxParents;
+    	}
     	
-    	final double width = visitedScrollPane.getWidth();
-    	final double cellHeight = visitedScrollPane.getHeight() / 10;
+    	vBox.getChildren().clear();
     	
-    	for (Integer i = 0; i < visited.length; i++) {
+    	final double width = sp.getWidth();
+    	final double cellHeight = sp.getHeight() / 10;
+    	
+    	for (Integer i = 0; i < array.length; i++) {
         	
         	HBox cell = new HBox();
         	cell.getStyleClass().add("scrollPaneCell");
     		
     		// incremento l'altezza del VBox
-    		visitedVBox.setPrefHeight(visitedVBox.getHeight() + cellHeight);
+    		vBox.setPrefHeight(vBox.getHeight() + cellHeight);
     		
     		// creo la cella e la aggiungo al VBox
         	cell.setPrefSize(width, cellHeight);
         	cell.getChildren().add(new Text(i.toString()));
-        	cell.getChildren().add(new Text(visited[i].toString()));
+        	cell.getChildren().add(new Text(array[i] != null ? array[i].toString() : "null"));
         	cell.setAlignment(Pos.CENTER_LEFT);
         	
-        	visitedVBox.getChildren().add(cell);
+        	vBox.getChildren().add(cell);
     	}
     }
 }

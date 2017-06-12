@@ -29,32 +29,32 @@
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Close" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
+          <Menu mnemonicParsing="false" text="Modifica">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Delete" text="Delete" />
+              <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Delete" text="Elimina" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Animation">
+            <Menu mnemonicParsing="false" text="Animazione">
               <items>
-                  <Menu mnemonicParsing="false" text="Run..">
+                  <Menu mnemonicParsing="false" text="Avvia..">
                     <items>
-                      <MenuItem id="run" fx:id="runMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Run" />
-                        <MenuItem id="stepbystep" fx:id="sbsMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Step-by-Step" />
+                      <MenuItem id="run" fx:id="runMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Avvia" />
+                        <MenuItem id="stepbystep" fx:id="sbsMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_RunAnimation" text="Passo-passo" />
                     </items>
                   </Menu>
                   <MenuItem fx:id="stopMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_Stop" text="Stop" />
-                  <MenuItem fx:id="stepMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_NextStep" text="Next Step" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_AnimationSettings" text="Settings" />
+                  <MenuItem fx:id="stepMenuItem" mnemonicParsing="false" onAction="#handleMenuItem_NextStep" text="Prossimo passo" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_AnimationSettings" text="Impostazioni" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Debug">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Debug" text="Print graph" />
+                <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Debug" text="Mostra il grafo" />
               </items>
             </Menu>
-          <Menu mnemonicParsing="false" text="Help">
+          <Menu mnemonicParsing="false" text="Aiuto">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_About" text="Informazioni" />
             </items>
           </Menu>
         </menus>
@@ -96,8 +96,8 @@
                               <VBox fx:id="vBoxParents" prefHeight="378.0" prefWidth="98.0" />
                            </content>
                         </ScrollPane>
-                        <Text layoutX="15.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Visited" wrappingWidth="60.21875" AnchorPane.leftAnchor="15.0" />
-                        <Text layoutX="135.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Parents" wrappingWidth="57.21875" AnchorPane.rightAnchor="57.78125" />
+                        <Text layoutX="15.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nodi visitati" wrappingWidth="99.21875" AnchorPane.leftAnchor="15.0" />
+                        <Text layoutX="135.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Vettore dei padri" wrappingWidth="103.21875" AnchorPane.rightAnchor="11.78125" />
                      </children></AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>

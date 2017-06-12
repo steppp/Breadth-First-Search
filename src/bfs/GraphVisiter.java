@@ -5,9 +5,7 @@ import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import model.queue.Queue;
-import singleton.Singleton;
 
-import java.util.Arrays;
 import java.util.function.Function;
 
 /**
@@ -26,11 +24,30 @@ public class GraphVisiter extends Thread {
 	// quando il thread viene sospeso con this.interrupt(), l'esecuzione torna al thread principale
 	// da lì sarà poi possibile riprendere l'esecuzione del thread BFS_VISIT
 	
+	/**
+	 * @return the parents
+	 */
+	public Integer[] getParents() {
+		return parents;
+	}
+
+
+	/**
+	 * @return the visited
+	 */
+	public Boolean[] getVisited() {
+		return visited;
+	}
+
+
 	Graph<CoordinateNode> g;
 	Node<CoordinateNode> root;
 	
+	Integer[] parents;
+	Boolean[] visited;
+	
 	// proprietà che descrivono le funzioni da applicare durante il progresso dell'algoritmo
-	Function<Boolean[], Void> showVisited = null;
+	Function<Object[], Void> showArray = null;
 	Function<Node<CoordinateNode>, Void> onANode = null;
 	Function<Edge<CoordinateNode>, Void> examiningEdge = null;
 	Function<Edge<CoordinateNode>, Void> nodeInserted = null;
@@ -41,14 +58,24 @@ public class GraphVisiter extends Thread {
 	public GraphVisiter(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
 		this.g = g;
 		this.root = root;
+		
+		int size = this.g.V().size();
+
+		// inizializzazione di un vettore che indica se un certo nodo è già stato visitato
+		this.visited = new Boolean[size];
+		for (int i = 0; i < size; i++) {
+			visited[i] = false;
+		}
+
+		parents = new Integer[size];
 	}
 	
 
 	/**
-	 * @param showVisited the showVisited to set
+	 * @param showArray the showVisited to set
 	 */
-	public void setShowVisited(Function<Boolean[], Void> showVisited) {
-		this.showVisited = showVisited;
+	public void setShowVisited(Function<Object[], Void> showArray) {
+		this.showArray = showArray;
 	}
 
 
@@ -103,15 +130,6 @@ public class GraphVisiter extends Thread {
 		Queue<Node<CoordinateNode>> s = new Queue<>(size);
 		s.enque(root);
 		
-		// inizializzazione di un vettore che indica se un certo nodo è già stato visitato
-		Boolean[] visited = new Boolean[size];
-		for (int i = 0; i < size; i++) {
-			visited[i] = false;
-		}
-
-		// TODO: aggiornare la lista dei padri, ricordarsi di visualizzare la lista dei padri
-		Integer[] parents = new Integer[size];
-		
 		// nodo radice visitato
 		visited[root.getElement().getIndex()] = true;
 		
@@ -119,10 +137,10 @@ public class GraphVisiter extends Thread {
 			
 			Node<CoordinateNode> u = s.dequeue();
 			
-			// TODO: mostrare anche l'array dei padri
 			// -------- MOSTRARE IL VETTORE VISITED ----------
-			if (showVisited != null) {
-				showVisited.apply(visited);
+			if (showArray != null) {
+				showArray.apply(visited);
+				showArray.apply(parents);
 			}
 						
 			// -------- ESAMINARE IL NODO U --------
@@ -181,14 +199,13 @@ public class GraphVisiter extends Thread {
 				}
 				
 				// -------- MOSTRARE IL VETTORE VISITED ----------
-				if (showVisited != null) {
-					showVisited.apply(visited);
+				if (showArray != null) {
+					showArray.apply(visited);
+					showArray.apply(parents);
 				}
 			}			
 		}
-		
-		Singleton.getInstance().logger.log(Arrays.asList(parents).toString());
-		
+				
 		// algoritmo terminato
 		if (functionEnded != null)
 			functionEnded.apply(null);
