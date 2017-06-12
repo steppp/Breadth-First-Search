@@ -129,8 +129,14 @@ public class GraphDrawer {
 	    		Node<CoordinateNode> target = graph.getNodeWithValue(new CoordinateNode(node.getElement().getIndex(),
 	    				node.getElement().getxPos(), node.getElement().getyPos()));
 	    		
+	    		// inserisco l'arco nel grafo
+	    		Edge<CoordinateNode> edge = new Edge<CoordinateNode>(source, target);
+	    		
+	    		// se non è stato possibile creare il vertice non faccio nulla
+	    		if (!Singleton.getInstance().getCurrentGraph().insertEdge(edge.getSource(), edge.getTarget())) return;
+	    		
 	    		// disegno l'arco
-	    		this.drawEdge(new Edge<CoordinateNode>(source, target));
+	    		this.drawEdge(edge);
 			}
 		});
 		
@@ -151,9 +157,6 @@ public class GraphDrawer {
 	 * @param edge arco da disegnare sul pannello corrente.
 	 */
 	public void drawEdge(Edge<CoordinateNode> edge) {
-		
-		// se non è stato possibile creare il vertice non faccio nulla
-		if (!Singleton.getInstance().getCurrentGraph().insertEdge(edge.getSource(), edge.getTarget())) return;
 		
 		Arrow arrow = new Arrow(edge.getSource().getElement().getxPos(), edge.getSource().getElement().getyPos(),
 				edge.getTarget().getElement().getxPos(), edge.getTarget().getElement().getyPos(), 5.0);
