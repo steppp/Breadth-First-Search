@@ -1,20 +1,25 @@
 package model.randomGraph ;
 
 import java.util.Random ;
+import model.node.visual.*;
 import model.graphs.Graph;
 import model.graphs.Node;
 
+//TODO: scelta nodi utente max 10?
 public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	
-	Graph<T> G ;
+	Graph<CoordinateNode> G ;
 	Integer nodesNumber ;
+	
+	double posX[] = {440.0, 293.0, 220.0, 220.0, 293.0, 440.0, 586.0, 659.0, 659.0, 586.0} ;
+	double posY[] = {69.0, 106.0, 206.0, 274.0, 373.0, 411.0, 373.0, 274.0, 206.0, 106.0} ;
 	
 
 	/*
 	 * Costruttore che genera un grafo casuale
 	 */
 	public randomGraph() {
-		this.G = new Graph<T>() ;	
+		this.G = new Graph<CoordinateNode>() ;	
 		this.nodesNumber = 0 ;
 		this.randomNodes();
 		this.randomEdges();
@@ -24,7 +29,7 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	 * Costruttore che genera un grafo casuale di n nodi(A SCELTA DELL'UTENTE)
 	 */
 	public randomGraph(int n) {
-		this.G = new Graph<T>() ;
+		this.G = new Graph<CoordinateNode>() ;
 		this.nodesNumber = 0 ;
 		this.nNodes(n) ;
 		this.randomEdges();
@@ -47,13 +52,42 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			m = random.nextInt(n) ;
 		}
 		
+		double posX = this.posX[0] ;
+		double posY = this.posY[0] ;
+		
+		if(m == 4) {
+			
+			posX = this.posX[2] ;
+			posY = this.posY[2] ;
+		}
+		
+		else if(m == 8) {
+			
+			posX = this.posX[1] ;
+			posY = this.posY[1] ;
+		}
 		
 		for (i=0;i<m;i++) {
 			
-			Node<T> x = new Node((T)i) ;
+			CoordinateNode coN = new CoordinateNode(i, posX, posY ) ;
+			
+			Node<CoordinateNode> x = (Node<CoordinateNode>) new Node(coN) ;
 		
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
+			
+			System.out.print("Appena creato il nodo " + 
+			                  coN.getIndex() + 
+			                  " in posizione " + 
+			                  coN.getxPos() +
+			                  "," +
+			                  coN.getyPos());
+			System.out.println(" ");
+			
+			if (i != m-1) {		//aggiorno la posizione del prossimo nodo
+				posX = this.posX[getDelta(i+1,m) + i + 1] ;
+				posY = this.posY[getDelta(i+1,m) + i + 1] ;
+			}
 			
 		}
 		
@@ -65,11 +99,14 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 	public boolean nNodes(int n){
 		
 		Integer i ;
+		
+		double posX = 0.0 ;
+		double posY = 0.0 ;
 
         if (n>1) {
 			for (i=0;i<n;i++) {
 				
-				Node<T> x = new Node((T)i) ;
+				Node<CoordinateNode> x =(Node<CoordinateNode>) new Node<CoordinateNode>(new CoordinateNode(i, posX, posY)) ;
 			
 				this.G.insertNode(x);
 				this.nodesNumber ++ ;
@@ -80,7 +117,6 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		return false ;
 	}
 		
-
 	/*
 	 * Crea un numero casuale di archi(MAX 2n)
 	 * Assumiamo che venga applicato ad un grafo di Interi
@@ -102,16 +138,16 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 			
 		    for (i=0;i<n;i++){
 		            
-		    	Node<T> u = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
-		    	Node<T> v = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+		    	Node<CoordinateNode> u = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+		    	Node<CoordinateNode> v = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
 		    	
 
 		    	tmp = this.G.insertEdge(u, v) ;
 		    	
 		    	if (!tmp ) {		//se non è stato possibile creare l'arco faccio un nuovo tentativo
 		    		
-		    		u = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
-			    	v = (Node<T>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+		    		u = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
+			    	v = (Node<CoordinateNode>)nodesEl[random1.nextInt(this.nodesNumber - 1)] ;
 			    	
 			    	
 			    	this.G.insertEdge(u, v) ;
@@ -123,11 +159,70 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		}
 	}
 	
+
 	@Override
 	public void print() {
 		this.G.print();
 	}
 
+	/*
+	 * Questo metodo resituisce lo spiazzamento della posizione che
+	 * un nodo deve occupare. 
+	 * Prende in input l'indice del nodo la cui posizione stiamo aggiornando, e
+	 * il numero di nodi totali.
+	 */
+	public int getDelta(int index, int maximum) {
+		
+		if (maximum == 2 ) {
+			return 4 ;
+		}
+		
+		else if (maximum == 3 || maximum == 4) {
+			if (index < 2) {
+				return 2 ;
+			} else {
+				return 5 ;
+			}
+		}
+		
+		else if (maximum == 5) {
+			return maximum ;
+		}
+		
+		else if (maximum == 6) {
+			if (index < 5) {
+				return 2 ;
+			} else {
+				return 4 ;
+			}
+		}
+		
+		else if (maximum == 7 || maximum == 8) {
+			if (index < 4) {
+				return 1 ;
+			} else {
+				return 2 ;
+			}
+		}
+		
+		else if (maximum == 9) {
+			if (index < 5) {
+				return 0 ;
+			} else {
+				return 1 ;
+			}
+		}
+		
+		return 0 ; //se in totale i nodi sono 10
+		
+	}
+	
+	public static void main (String[] args) {
+		
+		randomGraph<CoordinateNode> r1 = new randomGraph<CoordinateNode>() ;
+		
+		r1.print();
+	}
 	
 }
 
