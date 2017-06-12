@@ -1,2 +1,2 @@
-/model/
-/application/
+.DS_Store
+*.class
