@@ -12,7 +12,7 @@ Programma scritto in Java per la visualizzazione dell'algoritmo di ricerca in am
 - [x] **Caricamento** di un grafo da un file *json*
 - [x] Modalità di esecuzione **automatica** e **passo-passo**
 - [x] Visualizzazione delle liste di *padri* ed *elementi visitati*
-- [x] **shortcut** da tastiera
+- [x] **[shortcut](https://github.com/steppp/Breadth-First-Search/blob/master/README.md#shortcuts)** da tastiera
 
 
 ## Come utilizzare il programma
