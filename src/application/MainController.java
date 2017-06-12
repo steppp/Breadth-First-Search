@@ -312,14 +312,13 @@ public class MainController implements Initializable {
     	// interrompo il thread dell'animazione
     	Thread bfs = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
     	if (bfs != null && bfs.isAlive())
-    		// deprecato, ma non è stato possibile fare altrimenti
     		bfs.interrupt();
-    	
-    	// resetto il colore originale del grafo
-    	resetGraphColor(this.graphPane, Color.BLACK);
     	
     	// imposto i controlli indicando che l'animazione non sta proseguendo
     	setMenuItemState(false);
+    	
+    	// resetto il colore originale del grafo
+    	resetGraphColor(this.graphPane, Color.BLACK);
     }
 	
 	
@@ -564,6 +563,9 @@ public class MainController implements Initializable {
     	
     	// imposto lo stato dei controlli
     	setMenuItemState(true);
+    	
+    	// non c'è nessun nodo corrente
+    	s.currentNodeWithList = null;
     	
     	// resetto il colore originale del grafo
     	resetGraphColor(s.mainViewController.graphPane, Color.BLACK);
