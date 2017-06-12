@@ -95,7 +95,7 @@ public class GraphDrawer {
 	 * @param node nodo da disegnare sul pannello.
 	 */
 	public void drawNode(Node<CoordinateNode> node) {
-		double radius = Singleton.getInstance().NODE_RADIUS;
+		double radius = Singleton.NODE_RADIUS;
 		
 		Circle c = this.createCircle();
 		Text t = this.createText(node.getElement().toString());
@@ -115,8 +115,8 @@ public class GraphDrawer {
 						node.getElement().getxPos(), node.getElement().getyPos());
 				
 				// comunico all'utente che il nodo sorgente dell'arco è stato impostato
-				Singleton.getInstance().logger.log("Source node selected: " + node.getElement().toString() +
-						", waiting for the target node..");
+				Singleton.getInstance().logger.log("Nodo sorgente selezionato: " + node.getElement().toString() +
+						", in attesa del nodo di destinazione..");
 			} else {
 				// secondo click su un altro nodo -> creo il collegamento tra i due se non si tratta dello stesso nodo
 				
@@ -159,7 +159,7 @@ public class GraphDrawer {
 				edge.getTarget().getElement().getxPos(), edge.getTarget().getElement().getyPos(), 5.0);
 		
 		// calcolo il punto finale effettivo considerando il raggio del nodo ed il suo contorno
-		arrow.calculateEndWithOffset(Singleton.getInstance().NODE_RADIUS + 3.0);
+		arrow.calculateEndWithOffset(Singleton.NODE_RADIUS + 3.0);
 		arrow.setSourceLabel(edge.getSource().getElement().getIndex() + "");
 		arrow.setTargetLabel(edge.getTarget().getElement().getIndex() + "");
 		
@@ -167,8 +167,8 @@ public class GraphDrawer {
 		this.currentPane.getChildren().add(0, arrow);
 		
 		// comunico che l'arco è stato creato
-		Singleton.getInstance().logger.log("Edge from " + arrow.getSourceLabel() + " to " +
-				arrow.getTargetLabel() + " has been created.");
+		Singleton.getInstance().logger.log("L'arco tra il nodo con indice " + arrow.getSourceLabel() + " e quello con indice " +
+				arrow.getTargetLabel() + " è stato creato.");
 		
 		
 		// pongo a null currentNode per segnalare che non si stanno più collegando due nodi
@@ -187,15 +187,13 @@ public class GraphDrawer {
 	 * @return cerchio che indicherà il nodo.
 	 */
 	private Circle createCircle() {
-		
-		Singleton s = Singleton.getInstance();
-		
+				
 		Circle c = new Circle();
 		c.setFill((Color) currentPane.getBackground().getFills().get(0).getFill());
 		c.setStroke(Color.BLACK);
 		c.setStrokeWidth(3);
 		
-		c.setRadius(s.NODE_RADIUS);
+		c.setRadius(Singleton.NODE_RADIUS);
 		
 		return c;
 	}
@@ -225,7 +223,7 @@ public class GraphDrawer {
 	 * @param t	testo da centrare
 	 */
 	private void centerText(Text t) {
-		double radius = Singleton.getInstance().NODE_RADIUS;
+		double radius = Singleton.NODE_RADIUS;
 		
 		double w = t.getBoundsInLocal().getWidth();
 		double h = t.getBoundsInLocal().getHeight();

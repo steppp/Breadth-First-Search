@@ -24,7 +24,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -65,9 +64,6 @@ public class MainController implements Initializable {
 	@FXML
 	private TextArea outputTextArea;
 	
-	@FXML
-	private TextField pseudocodeTextArea;
-
     @FXML
     private Text coordinateLabel;
     
@@ -109,7 +105,7 @@ public class MainController implements Initializable {
 		// se clicco su uno spazio vuoto mentro sto collegando due nodi annullo l'operazione ed esco dal metodo
 		if (currentNode != null) {
 			
-			s.logger.log("Task canceled.");
+			s.logger.log("Operazione annullata.");
 			currentNode = null;
 			
 			return;
@@ -140,8 +136,6 @@ public class MainController implements Initializable {
 			s.getCurrentGraph().insertNode(new Node<CoordinateNode>(new CoordinateNode(index, xPos, yPos)));
 		}
 	}
-	
-	
 	
 	
 	@FXML
@@ -204,12 +198,17 @@ public class MainController implements Initializable {
 	
     @FXML
     private void handleMenuItem_Delete(ActionEvent event) {
+    	Singleton s = Singleton.getInstance();
     	
-    	Singleton.getInstance().currentNodeAndList = null;
-    	Singleton.getInstance().setCurrentGraph(new Graph<CoordinateNode>());
+    	s.animPrefs = new AnimationSettings();
+    	s.currentNodeWithList = null;
+    	s.setCurrentGraph(new Graph<CoordinateNode>());
     	graphPane.getChildren().clear();
     	
-    	Singleton.getInstance().logger.log("Graph cleared\n");
+    	this.vBoxParents.getChildren().clear();
+    	this.vBoxVisited.getChildren().clear();
+    	
+    	s.logger.clear();
     }
     
     
@@ -263,36 +262,42 @@ public class MainController implements Initializable {
     }
     
     
-    // TODO: inserire metodo per eliminare un nodo graficamente
-    // TODO: inserire metodo per eliminare un vertice graficamente
+    // TODO: (FORSE NO) inserire metodo per eliminare un nodo graficamente
+    // TODO: (FORSE NO) inserire metodo per eliminare un vertice graficamente
     
     
     @FXML
     void handleMenuItem_AnimationSettings(ActionEvent event) {
-    	
+    	MainController.showPrefWindow(event);
+    }
+    
+    
+    public static Void showPrefWindow(Event e) {
+
     	try {
-    		Parent root = FXMLLoader.load(getClass().getResource("applicationSettingsView.fxml"));
+    		Parent root = FXMLLoader.load(Singleton.getInstance().mainViewController.getClass().getResource("applicationSettingsView.fxml"));
     		Stage stage = new Stage();
     		stage.setTitle("Animation Settings");
     		stage.setScene(new Scene(root, 400, 150));
     		stage.show();
     		stage.setResizable(false);
-    	} catch (IOException e) {
-    		e.printStackTrace();
+    	} catch (IOException exc) {
+    		exc.printStackTrace();
     	}
+    	
+    	return null;
     }
     
 
 	@FXML
-    @SuppressWarnings("deprecation")
     void handleMenuItem_Stop(ActionEvent event) {
-    	Singleton.getInstance().currentNodeAndList = null;
+    	Singleton.getInstance().currentNodeWithList = null;
     	
     	// interrompo il thread dell'animazione
     	Thread bfs = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
     	if (bfs != null && bfs.isAlive())
     		// deprecato, ma non è stato possibile fare altrimenti
-    		bfs.stop();
+    		bfs.interrupt();
     	
     	// resetto il colore originale del grafo
     	resetGraphColor(this.graphPane, Color.BLACK);
@@ -381,12 +386,12 @@ public class MainController implements Initializable {
 			Singleton s = Singleton.getInstance();
 			
 			// ripristino il colore del nodo precedente se esiste
-			if (s.currentNodeAndList != null)
-				paintNode(s.getCurrentGraph(), s.currentNodeAndList.getKey(), Color.GREEN);
+			if (s.currentNodeWithList != null)
+				paintNode(s.getCurrentGraph(), s.currentNodeWithList.getKey(), Color.GREEN);
 			
 			// coloro il nodo specificato
 			paintNode(s.getCurrentGraph(), currentNode, Color.CORAL);
-			s.currentNodeAndList = new SimpleEntry<>(
+			s.currentNodeWithList = new SimpleEntry<>(
 							s.getCurrentGraph().getNodeWithValue(currentNode.getElement()),
 							s.getCurrentGraph().adj(currentNode));
 			
@@ -413,8 +418,8 @@ public class MainController implements Initializable {
 			
 			// rimuovo gli elementi dalla lista di adiacenza della copia del nodo sorgente
 			// e, se una volta fatto ciò si svuota, coloro il nodo con il colore precedente
-			s.currentNodeAndList.getValue().remove(edge.getTarget());
-			if (s.currentNodeAndList.getValue().isEmpty())
+			s.currentNodeWithList.getValue().remove(edge.getTarget());
+			if (s.currentNodeWithList.getValue().isEmpty())
 				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
 			
 			Singleton.getInstance().logger.log("++ Nodo con indice " + edge.getTarget().getElement().getIndex() + " inserito");
@@ -429,8 +434,8 @@ public class MainController implements Initializable {
 			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.DARKGRAY);
 			
 			// vedi metodo precedente
-			s.currentNodeAndList.getValue().remove(edge.getTarget());
-			if (s.currentNodeAndList.getValue().isEmpty())
+			s.currentNodeWithList.getValue().remove(edge.getTarget());
+			if (s.currentNodeWithList.getValue().isEmpty())
 				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
 			
 			Singleton.getInstance().logger.log("-- Nodo con indice " + edge.getTarget().getElement().getIndex() + " non inserito");
@@ -444,8 +449,8 @@ public class MainController implements Initializable {
 		
 		bfs.setFunctionEnded((Void) -> {
 			// ripristino il colore del nodo precedente se esiste
-			if (Singleton.getInstance().currentNodeAndList != null)
-				paintNode(Singleton.getInstance().getCurrentGraph(), Singleton.getInstance().currentNodeAndList.getKey(), Color.GREEN);
+			if (Singleton.getInstance().currentNodeWithList != null)
+				paintNode(Singleton.getInstance().getCurrentGraph(), Singleton.getInstance().currentNodeWithList.getKey(), Color.GREEN);
 			
 			Singleton.getInstance().logger.log("Animazione terminata!");
 			setMenuItemState(false);
@@ -509,7 +514,7 @@ public class MainController implements Initializable {
  
     	// se il grafo non contiene nodi
     	if (s.getCurrentGraph().V().size() == 0) {
-    		s.logger.log("No graph loaded.");
+    		s.logger.log("Nessun grafo caricato.");
     		return null;
     	}
     	
@@ -518,7 +523,7 @@ public class MainController implements Initializable {
 		
 		// se il nodo radice è null interrompo l'operazione
 		if (root == null) {
-			String errMsg = "Source node not set, aborting.";
+			String errMsg = "Nodo sorgente non impostato. Avvio annullato.";
 			s.logger.log(errMsg);
 
 	    	return null;
@@ -528,7 +533,7 @@ public class MainController implements Initializable {
     	// allora lo interrompo prima di avviare questo
     	Thread existingThread = s.getThreadByName(AnimationSettings.THREAD_NAME);
     	if (existingThread != null) {
-    		s.logger.log("Animation interrupted");
+    		s.logger.log("Animazione interrotta");
     		existingThread.interrupt();
     	}
     	
@@ -648,7 +653,7 @@ public class MainController implements Initializable {
     
     
     /**
-     * Visualizza il vettore dei nodi visitati sull'interfaccia
+     * Visualizza sull'interfaccia il vettore dei nodi visitati.
      * @param array array dei nodi visitati.
      * @return Void
      */
@@ -668,7 +673,7 @@ public class MainController implements Initializable {
     	// itero su tutti gli elementi del VBox
     	for (Integer i = 0; i < array.length; i++) {
     		
-    		// imposto il secondo componente della cella come visitato
+    		// aggiorno il valore del secondo componente della cella
     		cell = (HBox) vBox.getChildren().get(i);
     		((Text) cell.getChildren().get(1)).setText(array[i] != null ? array[i].toString() : "null");
     	}

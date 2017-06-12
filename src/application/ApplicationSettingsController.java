@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javafx.beans.value.ChangeListener;
@@ -43,10 +42,17 @@ public class ApplicationSettingsController implements Initializable {
 		speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
 			this.setAnimationInterval(newVal.longValue());
 		});
+		
+		Long interval = Singleton.getInstance().animPrefs.getInterval();
+		
+		if (interval != null) {
+			speedSlider.setValue((5100 - interval) * 100 / 5000);
+		} else {
+			speedSlider.setValue(50);
+			this.setAnimationInterval(50);
+		}
 
 		speedSlider.setMajorTickUnit(0.05);
-		speedSlider.setValue(50);
-		this.setAnimationInterval(50);
 		this.logSpeed();
 		
 		// imposto le opzioni del ChoiceBox

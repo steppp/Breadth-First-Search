@@ -5,6 +5,7 @@ import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
 import model.queue.Queue;
+import singleton.Singleton;
 
 import java.util.function.Function;
 
@@ -120,9 +121,13 @@ public class GraphVisiter extends Thread {
 
 
 	/**
-	 * Effettua una visita in ampiezza sul grafo indicato a partire dal nodo passato come parametro
+	 * Effettua una visita in ampiezza sul grafo indicato a partire dal nodo radice. Ad ogni passo significativo
+	 * dell'algoritmo, viene invocato un metodo che può ad esempio aggiornare l'interfaccia utente, che può essere
+	 * impostato dal getter della classe, quindi l'algoritmo viene sospeso utilizzando il metodo wait() della classe
+	 * Thread, ovvero la superclasse di questa.
+	 * @throws InterruptedException lancia un'eccezzione se l'algoritmo è interrotto mentre è in attesa.
 	 */
-	public void bfsVisit() {
+	public void bfsVisit() throws InterruptedException {
 		
 		int size = g.V().size();
 		
@@ -137,7 +142,7 @@ public class GraphVisiter extends Thread {
 			
 			Node<CoordinateNode> u = s.dequeue();
 			
-			// -------- MOSTRARE IL VETTORE VISITED ----------
+			// -------- MOSTRARE I VETTORI VISITED E PARENTS ----------
 			if (showArray != null) {
 				showArray.apply(visited);
 				showArray.apply(parents);
@@ -147,12 +152,9 @@ public class GraphVisiter extends Thread {
 			if (onANode != null) {
 				onANode.apply(u);
 				
+				// sospendo l'esecuzione
 				synchronized (this) {
-					try {
-						this.wait();
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					}
+					this.wait();
 				}
 			}
 			
@@ -163,12 +165,9 @@ public class GraphVisiter extends Thread {
 				if (examiningEdge != null) {
 					examiningEdge.apply(currentEdge);
 					
+					// sospendo l'esecuzione
 					synchronized (this) {
-						try {
-							this.wait();
-						} catch (InterruptedException e) {
-							Thread.currentThread().interrupt();
-						}
+						this.wait();
 					}
 				}
 				
@@ -189,19 +188,16 @@ public class GraphVisiter extends Thread {
 						nodeNotInserted.apply(currentEdge);
 					}
 				}
-
-				synchronized (this) {
-					try {
-						this.wait();
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					}
-				}
 				
-				// -------- MOSTRARE IL VETTORE VISITED ----------
+				// -------- MOSTRARE I VETTORI VISITED E PARENTS ----------
 				if (showArray != null) {
 					showArray.apply(visited);
 					showArray.apply(parents);
+				}
+
+				// sospendo l'esecuzione
+				synchronized (this) {
+					this.wait();
 				}
 			}			
 		}
@@ -212,11 +208,21 @@ public class GraphVisiter extends Thread {
 	}
 	
 	
+	/**
+	 * Avvia l'algoritmo se né il grafo né il nodo radice sono nulli. Ritorna se scatta un'eccezione
+	 * di tipo InterruptedException (il thread è stato interrotto mentre era in attesa) in modo da
+	 * non proseguire con l'animazione.
+	 */
 	public void run() {
 		
-		// inizio solamente se il grafo ed il nodo di partenza non sono nulli
-		if (this.g != null && this.root != null) {
-			this.bfsVisit();
+		try {
+			// inizio solamente se il grafo ed il nodo di partenza non sono nulli
+			if (this.g != null && this.root != null) {
+				this.bfsVisit();
+			}
+		} catch (InterruptedException e) {
+			Singleton.getInstance().logger.log("Animazione interrotta");
+			return;
 		}
 	}
 }

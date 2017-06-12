@@ -57,23 +57,29 @@ public class Main extends Application {
 		// gestore per gli eventi scatenati dalla pressione di un tasto della tastiera
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
 			
+			if (!event.isControlDown())
+				return;
+			
+			Function<Event, Void> handler = null;
+						
 			switch(event.getCode()) {
 			case N:
-				if (event.isControlDown()) {
-					Function<Event, Void> handler = MainController::nextStep;
-					handler.apply(event);
-				}
+				handler = MainController::nextStep;
+				handler.apply(event);
 				break;
 				
 			// sia nel caso S che nel caso R chiamo il metodo run
 			// sarà poi compito di quel metodo di discriminare i due casi
 			case S:
 			case R:
-				if (event.isControlDown()) {
-					Function<Event, Void> handler = MainController::run;
-					handler.apply(event);
-				}
+				handler = MainController::run;
+				handler.apply(event);
 				break;
+				
+			case P:
+				handler = MainController::showPrefWindow;
+				handler.apply(event);
+				
 			default:
 				break;
 			}
