@@ -217,12 +217,5 @@ public class randomGraph<T extends Comparable<T>> extends Graph<T>{
 		
 	}
 	
-	public static void main (String[] args) {
-		
-		randomGraph<CoordinateNode> r1 = new randomGraph<CoordinateNode>() ;
-		
-		r1.print();
-	}
-	
 }
 

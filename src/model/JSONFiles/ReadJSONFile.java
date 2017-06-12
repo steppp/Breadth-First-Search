@@ -11,8 +11,7 @@ import org.json.simple.*;
 import org.json.simple.parser.*;
 
 
-//TODO: metodi per generare il file 
-/* permette di leggere un file con estensione .json 
+/* Classe che permette di leggere un file con estensione .json 
    contentente l'implementazione di un grafo. 
 */
 
@@ -215,7 +214,6 @@ public class ReadJSONFile {
 	/*
 	 * Questo metodo apre lo stream con il file di input, ne legge 
 	 * e copia il contenuto in una stringa che viene restituita dallo stesso.
-	 * 
 	 */
 	public String getFileContent() {
 		
