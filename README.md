@@ -58,5 +58,5 @@ In certi punti dell'algoritmo inoltre vengono effettuate delle chiamate a delle 
 
 
 #### Creato da:
-[Melania Ghelli](https://github.com/melastone)
-[Stefano Andriolo](https://github.com/steppp)
+*  [Melania Ghelli](https://github.com/melastone)
+*  [Stefano Andriolo](https://github.com/steppp)
