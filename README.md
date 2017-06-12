@@ -55,3 +55,8 @@ In certi punti dell'algoritmo inoltre vengono effettuate delle chiamate a delle 
 `Ctrl + N`: effettua il prossimo passo
 
 `Ctrl + P`: apri il pannello di preferenze dell'animazione
+
+
+#### Creato da:
+[Melania Ghelli](https://github.com/melastone)
+[Stefano Andriolo](https://github.com/steppp)
