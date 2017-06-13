@@ -187,11 +187,12 @@ public class JSONFileReader {
 		
 		return G ;
 	} 
-
+	/**
 	 * Questo è il metodo da invocare nel MainController.
 	 * Richiama tutti gli altri metodi facendo sì che venga restituito il 
 	 * Grafo contenuto nel file .json, gestendo tutti gli eventuali errori.
 	 * @return grafo ottenuto dalla lettura del file.
+	 */
 	public Graph<CoordinateNode> readGraphFromJSONFilereader(){
 		
      	try {

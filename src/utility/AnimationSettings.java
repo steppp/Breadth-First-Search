@@ -18,7 +18,7 @@ public class AnimationSettings {
 	}
 	
 	/**
-	 * @param speed the speed to set
+	 * @param millisInterval the speed to set
 	 */
 	public void setInterval(long millisInterval) {
 		this.millisInterval = millisInterval;
