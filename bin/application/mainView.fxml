@@ -22,9 +22,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_OpenFile" text="Open.." />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Save" text="Save" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_SaveAs" text="Save as.." />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_OpenFile" text="Apri.." />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Save" text="Salva" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_SaveAs" text="Salva come.." />
                   <Menu mnemonicParsing="false" text="Grafo casuale..">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RandomGraph" text="Numero di nodi">
@@ -40,7 +40,7 @@
                      </items>
                   </Menu>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Chiudi" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Modifica">
