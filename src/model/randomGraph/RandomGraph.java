@@ -5,7 +5,12 @@ import model.node.visual.*;
 import model.graphs.Graph;
 import model.graphs.Node;
 
-//TODO: scelta nodi utente max 10?
+/**
+ * Classe che permette di generare un grafo casuale.
+ * @author melania
+ *
+ * @param <T>
+ */
 public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	
 	Graph<CoordinateNode> G ;

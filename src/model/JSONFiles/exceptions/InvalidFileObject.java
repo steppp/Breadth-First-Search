@@ -1,8 +1,10 @@
 package model.JSONFiles.exceptions ;
 
-/*
- * This exception happens when a .json file does not
- * represents a Graph.
+/**
+ * Eccezione che viene sollevata nel caso in cui un oggetto di tipo
+ * JSON contenuto in un file non rappresenta correttamente un grafo.
+ * @author melania
+ *
  */
 public class InvalidFileObject extends Exception {
 	

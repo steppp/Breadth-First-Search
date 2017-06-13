@@ -10,10 +10,12 @@ import model.node.visual.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
-
-/* Classe che permette di leggere un file con estensione .json 
+/**
+ * Classe che permette di leggere un file con estensione .json 
    contentente l'implementazione di un grafo. 
-*/
+ * @author melania
+ *
+ */
 
 public class JSONFileReader {
 	
