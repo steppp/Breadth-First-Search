@@ -87,12 +87,12 @@
                         <Text fx:id="coordinateLabel" layoutX="14.0" layoutY="26.568359375" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.21875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
                         <ScrollPane fx:id="scrollPaneVisited" hbarPolicy="NEVER" layoutX="15.0" layoutY="72.0" prefHeight="379.0" prefWidth="100.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="72.0">
                            <content>
-                              <VBox fx:id="vBoxVisited" prefHeight="377.0" prefWidth="100.0" />
+                              <VBox fx:id="vBoxVisited" prefHeight="0.0" prefWidth="100.0" />
                            </content>
                         </ScrollPane>
                         <ScrollPane fx:id="scrollPaneParents" layoutX="155.0" layoutY="72.0" prefHeight="380.0" prefWidth="100.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="71.0">
                            <content>
-                              <VBox fx:id="vBoxParents" prefHeight="378.0" prefWidth="98.0" />
+                              <VBox fx:id="vBoxParents" prefHeight="0.0" prefWidth="98.0" />
                            </content>
                         </ScrollPane>
                         <Text layoutX="15.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nodi visitati" wrappingWidth="99.21875" AnchorPane.leftAnchor="15.0" />

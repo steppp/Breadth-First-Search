@@ -28,7 +28,7 @@ public class Main extends Application {
 			// TODO: inserire l'icona dell'applicazione
 			
 			// rilascio tutte le risorse allocate prima della chiusura dell'applicazione
-			primaryStage.setOnCloseRequest(Main::performOnClosingCleanUp);
+			primaryStage.setOnCloseRequest(MainController::performCleanUp);
 			
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -80,30 +80,14 @@ public class Main extends Application {
 				handler = MainController::showPrefWindow;
 				handler.apply(event);
 				
+			case X:
+				handler = MainController::stop;
+				handler.apply(event);
+				break;
+				
 			default:
 				break;
 			}
 		});
-	}
-	
-	/**
-	 * Metodo che si preoccupa di rilasciare tutte le risorse allocate prima della chiusura dell'applicazione
-	 * @param we istanza dell'evento sulla finestra.
-	 */
-	private static void performOnClosingCleanUp(WindowEvent we) {
-		
-		Singleton.getInstance().logger.log("Goodbye!");	
-		System.out.println("Goodbye!");
-		
-		// annullo il timer per l'esecuzione animata dell'algoritmo
-		if (Singleton.getInstance().timer != null) {
-			Singleton.getInstance().timer.cancel();
-		}
-		
-		// termino il thread relativo all'esecuzione dell'algoritmo BFS
-		Thread t = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
-		if (t != null) {
-			t.interrupt();
-		}
 	}
 }

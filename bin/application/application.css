@@ -21,8 +21,28 @@
     -fx-background-color: derive(#1d1d1d,20%);
 }
 
+VBox  {
+	-fx-border-style: solid outside;
+	-fx-border-width: 1;
+	-fx-border-color: black;
+}
+
+ScrollPane {
+	-fx-border-style: solid inside;
+	-fx-border-width: 1;
+	-fx-border-color: black;
+	-fx-padding: 0;
+}
+
 .scrollPaneCell {
 	-fx-spacing: 10;
 	-fx-padding: 5;
 	-fx-font-weight: bold;
+	-fx-border-style: solid;
+	-fx-border-width: 1;
+	-fx-border-color: black;
+}
+
+.rootNodeCell {
+	-fx-background-color: #ffbf46;
 }
