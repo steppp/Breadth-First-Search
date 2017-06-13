@@ -32,8 +32,9 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	
 	/**
 	 * Costruttore che genera un grafo casuale di n nodi(A SCELTA DELL'UTENTE)
-	 * @param n numero di nodi.
-	 */
+     * MAX_n = 20 ;
+     * * @param n numero di nodi.
+     * */
 	public RandomGraph(int n) {
 		this.G = new Graph<CoordinateNode>() ;
 		this.nodesNumber = 0 ;
@@ -91,6 +92,11 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
 			
+			if (i != n-1 && i < 9) {		//aggiorno la posizione del prossimo nodo
+				posX = this.posX[getDelta(i+1,n) + i + 1] ;
+				posY = this.posY[getDelta(i+1,n) + i + 1] ;
+			}
+			
 		}
 		
 	}
@@ -98,6 +104,7 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	/**
 	 * Crea un numero fisso e stabilito dall'utente di nodi etichettati con numeri interi
 	 * da 0 a n.
+	 * MAX_n = 20.
 	 * Assumiamo che venga applicato ad un grafo di Interi.
 	 * @param n numero di nodi
 	 * @return valore booleano ad indicare se è stato possibile generare i nodi
@@ -132,13 +139,65 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 				this.G.insertNode(x);
 				this.nodesNumber ++ ;
 				
-				if (i != n-1) {		//aggiorno la posizione del prossimo nodo
+				if (i != n-1 && i < 9) {		//aggiorno la posizione del prossimo nodo
 					posX = this.posX[getDelta(i+1,n) + i + 1] ;
 					posY = this.posY[getDelta(i+1,n) + i + 1] ;
 				}
 				
+				else if (i >= 9 && i < n-1) {
+					
+					int j ;
+					
+					if (i == 9) {
+						posX = this.posX[0] ;
+						posY = this.posY[0] + 50.0 ;
+					}
+					
+					else if (i == 10) {	
+						j = i%10 ;
+						posX = this.posX[getDelta(j,n) + j + 1] + 50.0 ;
+						posY = this.posY[getDelta(j,n) + j + 1] + 50.0 ;
+					}
+					
+					else if (i == 13) {
+						j = i%10 ;
+						posX = this.posX[getDelta(j,n) + j + 1] + 50.0 ;
+						posY = this.posY[getDelta(j,n) + j + 1] - 50.0 ;
+					}
+					
+					else if (i == 14) {
+						j = i%10 ;
+						posX = this.posX[getDelta(j,n) + j + 1] ;
+						posY = this.posY[getDelta(j,n) + j + 1] - 50.0 ;
+					}
+					
+					else if (i == 15) {
+						j = i%10 ;
+						posX = this.posX[getDelta(j,n) + j + 1] - 50.0 ;
+						posY = this.posY[getDelta(j,n) + j + 1] - 50.0 ;
+					}
+					
+					
+					else if (i == 18) {
+						j = i%10 ;
+						posX = this.posX[getDelta(j,n) + j + 1] - 50.0 ;
+						posY = this.posY[getDelta(j,n) + j + 1] + 50.0 ;
+					}
+					
+					
+					else if (i == 11 || i == 12) {
+						j = i%10 ;
+						posX = this.posX[getDelta(j,n) + j + 1] + 100.0 ;
+						posY = this.posY[getDelta(j,n) + j + 1] ;
+					}
+					
+					else if (i == 16 || i == 17) {
+						j = i%10 ;
+						posX = this.posX[getDelta(j,n) + j + 1] - 100.0 ;
+						posY = this.posY[getDelta(j,n) + j + 1];
+					}
+				}
 			}
-			
 			return true ;
 		}
 		return false ;
@@ -244,6 +303,10 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 			} else {
 				return 1 ;
 			}
+		}
+		
+		else if (massimo > 10 && massimo < 20) {
+			//
 		}
 		
 		return 0 ; //se in totale i nodi sono 10
