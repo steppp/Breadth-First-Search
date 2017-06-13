@@ -85,14 +85,6 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
 			
-//			System.out.print("Appena creato il nodo " + 
-//			                  coN.getIndex() + 
-//			                  " in posizione " + 
-//			                  coN.getxPos() +
-//			                  "," +
-//			                  coN.getyPos());
-//			System.out.println(" ");
-			
 			if (i != m-1) {		//aggiorno la posizione del prossimo nodo
 				posX = this.posX[getDelta(i+1,m) + i + 1] ;
 				posY = this.posY[getDelta(i+1,m) + i + 1] ;
@@ -174,6 +166,7 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	public void print() {
 		this.G.print();
 	}
+
 
 	/*
 	 * Questo metodo resituisce lo spiazzamento della posizione che
