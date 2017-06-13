@@ -92,6 +92,11 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
 			
+			if (i != n-1 && i < 9) {		//aggiorno la posizione del prossimo nodo
+				posX = this.posX[getDelta(i+1,n) + i + 1] ;
+				posY = this.posY[getDelta(i+1,n) + i + 1] ;
+			}
+			
 		}
 		
 	}
