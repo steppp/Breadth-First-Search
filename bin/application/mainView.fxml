@@ -6,6 +6,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -24,7 +25,20 @@
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_OpenFile" text="Open.." />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Save" text="Save" />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_SaveAs" text="Save as.." />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RandomGraph" text="Random graph.." />
+                  <Menu mnemonicParsing="false" text="Grafo casuale..">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_RandomGraph" text="Numero di nodi">
+                           <graphic>
+                              <SplitMenuButton fx:id="splitMenuItem" mnemonicParsing="false" text="SplitMenuButton">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" text="Action 1" />
+                                  <MenuItem mnemonicParsing="false" text="Action 2" />
+                                </items>
+                              </SplitMenuButton>
+                           </graphic>
+                        </MenuItem>
+                     </items>
+                  </Menu>
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#handleMenuItem_Close" text="Close" />
             </items>

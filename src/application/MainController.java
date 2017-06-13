@@ -23,6 +23,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
@@ -95,6 +96,9 @@ public class MainController implements Initializable {
     @FXML
     private VBox vBoxParents;
     
+    @FXML
+    private SplitMenuButton splitMenuItem;
+    
     // -------------------------------------------
 	
 	
@@ -133,7 +137,6 @@ public class MainController implements Initializable {
 			// se currentNode non è null vuol dire che mi trovo già su un nodo, quindi non faccio nulla
 			if (MainController.currentNode != null) return;
 			
-			// TODO: creare il nodo con GraphDrawer
 			Singleton.getInstance().drawingUtility.drawNode(index, xPos, yPos);
 			
 			// inserisco il nuovo nodo nel grafo
@@ -175,10 +178,16 @@ public class MainController implements Initializable {
 	
     @FXML
     void handleMenuItem_RandomGraph(ActionEvent event) {
+    	
     	// pulisco la scena
     	this.handleMenuItem_Delete(null);
     	
-    	RandomGraph<CoordinateNode> rg = new RandomGraph<CoordinateNode>();
+    	RandomGraph<CoordinateNode> rg = null;
+    	Integer size = Singleton.nodesNumber;
+    	
+    	if (size == null || size == 0)
+    		rg = new RandomGraph<CoordinateNode>();
+    	else rg = new RandomGraph<CoordinateNode>(size);
     	
     	if (Singleton.getInstance().drawingUtility.drawGraph(rg.getGraph())) {
         	Singleton.getInstance().setCurrentGraph(rg.getGraph());
@@ -218,6 +227,25 @@ public class MainController implements Initializable {
 
 		scrollPaneParents.setFitToWidth(true);
 		scrollPaneVisited.setFitToWidth(true);
+		
+		
+		splitMenuItem.getItems().clear();
+		splitMenuItem.setText("0");
+		
+		for (int i = 0; i <= 20; i++) {
+			MenuItem mi = new MenuItem(i + "");
+			mi.setOnAction((event) -> {
+				try {
+					Integer value = Integer.parseInt(((MenuItem) event.getSource()).getText());
+					Singleton.nodesNumber = value;
+					splitMenuItem.setText(value + "");
+				} catch (Exception e) {
+					Singleton.nodesNumber = null;
+				}
+			});
+			
+			splitMenuItem.getItems().add(mi);
+		}
 	}
 	
 	

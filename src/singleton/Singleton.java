@@ -124,10 +124,16 @@ public class Singleton {
 	public static final String ABOUT_WEB_PAGE = "https://github.com/steppp/Breadth-First-Search/";
 	
 	
+	/**
+	 * Percorso del file da salvare.
+	 */
 	public static String filePath = null;
 	
 	
-	
+	/**
+	 * Numero di nodi del grafo generato casualmente.
+	 */
+	public static Integer nodesNumber = null;
 	
 
 	
