@@ -56,6 +56,11 @@ public class GraphVisiter extends Thread {
 	Function<Void, Void> functionEnded = null;
 	
 	
+	/**
+	 * Inizializza l'oggeto impostando il grafo su cui eseguire l'algoritmo ed il nodo radice da cui partire.
+	 * @param g grafo su cui eseguire l'algoritmo.
+	 * @param root nodo radice.
+	 */
 	public GraphVisiter(Graph<CoordinateNode> g, Node<CoordinateNode> root) {
 		this.g = g;
 		this.root = root;
@@ -221,7 +226,7 @@ public class GraphVisiter extends Thread {
 				this.bfsVisit();
 			}
 		} catch (InterruptedException e) {
-			Singleton.getInstance().logger.log("Animazione interrotta");
+			Singleton.getInstance().logger.log("## Animazione interrotta");
 			return;
 		}
 	}

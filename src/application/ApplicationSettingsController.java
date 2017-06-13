@@ -95,23 +95,39 @@ public class ApplicationSettingsController implements Initializable {
 	}
 	
 	
+	/**
+	 * Imposta l'intervallo che intercorre tra uno step dell'animazione ed il successivo.
+	 * @param percentage intero da 0 a 100 che indica la percentuale a cui impostare la velocità.
+	 */
 	private void setAnimationInterval(long percentage) {
 		long interval = 5100 - (5000 * percentage / 100);
 		Singleton.getInstance().animPrefs.setInterval(interval);
 	}
 	
 	
+	/**
+	 * Scrive nell'area di testo la velocità impostata.
+	 */
 	private void logSpeed() {
 		Singleton.getInstance().logger.log("Velocità dell'animazione impostata al " +
 				(int) speedSlider.getValue() + "%"); 
 	}
 	
 	
+	/**
+	 * Scrive nell'area di testo l'indice del nodo radice.
+	 * @param rootIndex nodo radice impostato.
+	 */
 	private static void logRoot(Integer rootIndex) {
 		Singleton.getInstance().logger.log("Nodo radice impostato sul nodo con indice " + rootIndex.toString());
 	}
 	
 	
+	/**
+	 * Converte un Set di nodi in una lista di interi.
+	 * @param s Set di nodi da convertire.
+	 * @return lista di interi convertita contenente gli indici dei nodi all'interno del Set passato come parametro.
+	 */
 	@SuppressWarnings("serial")
 	private List<Integer> getIndexListFromNodeSet(Set<Node<CoordinateNode>> s) {
 		
