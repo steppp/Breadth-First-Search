@@ -23,7 +23,7 @@ public class Edge<T extends Comparable<T>> {
 	}
 
 	/**
-	 * @param il nodo da impostare come sorgente.
+	 * @param source il nodo da impostare come sorgente.
 	 */
 	public void setSource(Node<T> source) {
 		this.source = source;
@@ -37,7 +37,7 @@ public class Edge<T extends Comparable<T>> {
 	}
 
 	/**
-	 * @param il nodo da impostare come destinazione.
+	 * @param target il nodo da impostare come destinazione.
 	 */
 	public void setTarget(Node<T> target) {
 		this.target = target;

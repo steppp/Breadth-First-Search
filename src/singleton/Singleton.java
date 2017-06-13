@@ -124,7 +124,7 @@ public class Singleton {
 	public static final String ABOUT_WEB_PAGE = "https://github.com/steppp/Breadth-First-Search/";
 	
 	
-	
+	public static String filePath = null;
 	
 	
 	

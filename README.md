@@ -12,11 +12,11 @@ Esempio di esecuzione del programma:
 - [x] Animazione dell'algoritmo BFS
 - [x] Creazione di un grafo in modo **visuale**
 - [x] Creazione di un grafo **casuale**
-- [ ] **Salvataggio** di un grafo in formato *json*
+- [x] **Salvataggio** di un grafo in formato *json*
 - [x] **Caricamento** di un grafo da un file *json*
 - [x] Modalità di esecuzione **automatica** e **passo-passo**
 - [x] Visualizzazione delle liste di *padri* ed *elementi visitati*
-- [x] **[shortcut](https://github.com/steppp/Breadth-First-Search/blob/master/README.md#shortcuts)** da tastiera
+- [x] **[shortcut](https://github.com/steppp/Breadth-First-Search#shortcuts)** da tastiera
 
 
 ## Come utilizzare il programma

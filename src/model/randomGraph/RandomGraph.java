@@ -9,7 +9,7 @@ import model.graphs.Node;
  * Classe che permette di generare un grafo casuale.
  * @author melania
  *
- * @param <T>
+ * @param <T> tipo che implementa comparable
  */
 public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	
@@ -32,8 +32,9 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	
 	/**
 	 * Costruttore che genera un grafo casuale di n nodi(A SCELTA DELL'UTENTE)
-	 * MAX_n = 20 ;
-	 */
+     * MAX_n = 20 ;
+     * * @param n numero di nodi.
+     * */
 	public RandomGraph(int n) {
 		this.G = new Graph<CoordinateNode>() ;
 		this.nodesNumber = 0 ;
