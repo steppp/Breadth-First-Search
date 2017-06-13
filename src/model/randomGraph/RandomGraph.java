@@ -20,7 +20,7 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	double posY[] = {69.0, 106.0, 206.0, 274.0, 373.0, 411.0, 373.0, 274.0, 206.0, 106.0} ;
 	
 
-	/*
+	/**
 	 * Costruttore che genera un grafo casuale
 	 */
 	public RandomGraph() {
@@ -30,7 +30,7 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 		this.randomEdges();
 	}
 	
-	/*
+	/**
 	 * Costruttore che genera un grafo casuale di n nodi(A SCELTA DELL'UTENTE)
 	 */
 	public RandomGraph(int n) {
@@ -50,7 +50,7 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	}
 	
 		
-    /*
+    /**
 	 * Crea un numero casuale di nodi (MAX 10) etichettati con numeri interi da 0 a 10	
 	 * Assumiamo che venga applicato ad un grafo di Interi
 	 */
@@ -90,42 +90,62 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 			this.G.insertNode(x);
 			this.nodesNumber ++ ;
 			
-			if (i != m-1) {		//aggiorno la posizione del prossimo nodo
-				posX = this.posX[getDelta(i+1,m) + i + 1] ;
-				posY = this.posY[getDelta(i+1,m) + i + 1] ;
-			}
-			
 		}
 		
 	}
 	
-	/*
-	 * Crea n nodi 
+	/**
+	 * Crea un numero fisso e stabilito dall'utente di nodi etichettati con numeri interi
+	 * da 0 a n.
+	 * Assumiamo che venga applicato ad un grafo di Interi.
+	 * @param n numero di nodi
+	 * @return valore booleano ad indicare se è stato possibile generare i nodi
 	 */
 	public boolean nNodes(int n){
 		
 		Integer i ;
 		
-		double posX = 0.0 ;
-		double posY = 0.0 ;
+		if (n>1) {
+			
+			double posX = this.posX[0] ;
+			double posY = this.posY[0] ;
+			
+			if(n == 4) {
+				
+				posX = this.posX[2] ;
+				posY = this.posY[2] ;
+			}
+			
+			else if(n == 8) {
+				
+				posX = this.posX[1] ;
+				posY = this.posY[1] ;
+			}
 
-        if (n>1) {
 			for (i=0;i<n;i++) {
 				
-				Node<CoordinateNode> x =(Node<CoordinateNode>) new Node<CoordinateNode>(new CoordinateNode(i, posX, posY)) ;
+				CoordinateNode coN = new CoordinateNode(i, posX, posY) ;
+				
+				Node<CoordinateNode> x = new Node<CoordinateNode>(coN) ;
 			
 				this.G.insertNode(x);
 				this.nodesNumber ++ ;
 				
+				if (i != n-1) {		//aggiorno la posizione del prossimo nodo
+					posX = this.posX[getDelta(i+1,n) + i + 1] ;
+					posY = this.posY[getDelta(i+1,n) + i + 1] ;
+				}
+				
 			}
+			
 			return true ;
 		}
 		return false ;
 	}
 		
-	/*
+	/**
 	 * Crea un numero casuale di archi(MAX 2n)
-	 * Assumiamo che venga applicato ad un grafo di Interi
+	 * Assumiamo che venga applicato ad un grafo di Interi.
 	 */
 	@SuppressWarnings("unchecked")
 	public void randomEdges(){
@@ -173,48 +193,52 @@ public class RandomGraph<T extends Comparable<T>> extends Graph<T>{
 	}
 
 
-	/*
+	/**
 	 * Questo metodo resituisce lo spiazzamento della posizione che
 	 * un nodo deve occupare. 
 	 * Prende in input l'indice del nodo la cui posizione stiamo aggiornando, e
 	 * il numero di nodi totali.
+	 * @param indice del nodo di cui determinare le coordinate 
+	 * @param massimo numero totale dei nodi da creare
+	 * @return spiazzamento della posizione che
+	 * un nodo deve occupare. 
 	 */
-	public int getDelta(int index, int maximum) {
+	public int getDelta(int indice, int massimo) {
 		
-		if (maximum == 2 ) {
+		if (massimo == 2 ) {
 			return 4 ;
 		}
 		
-		else if (maximum == 3 || maximum == 4) {
-			if (index < 2) {
+		else if (massimo == 3 || massimo == 4) {
+			if (indice < 2) {
 				return 2 ;
 			} else {
 				return 5 ;
 			}
 		}
 		
-		else if (maximum == 5) {
-			return maximum ;
+		else if (massimo == 5) {
+			return massimo ;
 		}
 		
-		else if (maximum == 6) {
-			if (index < 5) {
+		else if (massimo == 6) {
+			if (indice < 5) {
 				return 2 ;
 			} else {
 				return 4 ;
 			}
 		}
 		
-		else if (maximum == 7 || maximum == 8) {
-			if (index < 4) {
+		else if (massimo == 7 || massimo == 8) {
+			if (indice < 4) {
 				return 1 ;
 			} else {
 				return 2 ;
 			}
 		}
 		
-		else if (maximum == 9) {
-			if (index < 5) {
+		else if (massimo == 9) {
+			if (indice < 5) {
 				return 0 ;
 			} else {
 				return 1 ;
