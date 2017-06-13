@@ -42,12 +42,13 @@ public class JSONFileReader {
 		this.parser = new JSONParser() ;
 	}
 	
-    /**
-     * Questo metodo ritorna il JSONObject contenuto nel file.
-     * @return JSONObject letto nel file
-     * @throws WrongFileExtension
-     * @throws EmptyFileName
-     */
+    
+	/**
+   * Questo metodo ritorna il JSONObject contenuto nel file.
+	 * @return jsonObkect ottenuto dal file.
+	 * @throws WrongFileExtension se l'estensione non è corretta.
+	 * @throws EmptyFileName se il nome del file è vuoto.
+	 */
 	public JSONObject getFile () throws WrongFileExtension, EmptyFileName {
 		
 		if (!this.fileName.endsWith(".json")) {
@@ -91,9 +92,9 @@ public class JSONFileReader {
 	 * Questo metodo restituisce un grafo a partire da un JSONObject.
 	 * Solleva un'eccezione nel caso in cui l'oggetto non rispetti le regole sintattiche
 	 * notificate dal software.
-	 * @param object rappresenta un grafo in notazione .json
-	 * @return grafo letto dal file
-	 * @throws InvalidFileObject
+	 * @param object oggetto da decodificare.
+	 * @return grafo genereato dall'oggetto.
+	 * @throws InvalidFileObject se l'oggetto non rispetta le regole sintattiche previste.
 	 */
 	public Graph<CoordinateNode> readGraph(JSONObject object) throws InvalidFileObject {
 		
@@ -187,11 +188,10 @@ public class JSONFileReader {
 		return G ;
 	} 
 
-	/**
-	 * Questo metodo richiama tutti gli altri facendo sì che venga restituito il 
+	 * Questo è il metodo da invocare nel MainController.
+	 * Richiama tutti gli altri metodi facendo sì che venga restituito il 
 	 * Grafo contenuto nel file .json, gestendo tutti gli eventuali errori.
-	 * @return grafo definitivo
-	 */
+	 * @return grafo ottenuto dalla lettura del file.
 	public Graph<CoordinateNode> readGraphFromJSONFilereader(){
 		
      	try {

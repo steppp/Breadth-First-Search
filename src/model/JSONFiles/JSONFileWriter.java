@@ -78,8 +78,9 @@ public class JSONFileWriter {
 			
 			JSONObject nodeObj = new JSONObject() ;
 			
-			nodeObj.put("x", (int)node.getElement().getxPos()) ;
-			nodeObj.put("y", (int)node.getElement().getyPos()) ;
+			nodeObj.put("x", (int) node.getElement().getxPos()) ;
+			nodeObj.put("y", (int) node.getElement().getyPos()) ;
+
 			
 			verticesListObj.put(Integer.toString(node.getElement().getIndex()), nodeObj) ;
 			
