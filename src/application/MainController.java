@@ -48,6 +48,7 @@ import utility.AnimationSettings;
 import utility.GraphDrawer;
 import utility.Logger;
 import model.JSONFiles.JSONFileReader;
+import model.JSONFiles.JSONFileWriter;
 import model.arrow.Arrow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -166,9 +167,9 @@ public class MainController implements Initializable {
     	
     	// imposto il grafo come grafo corrente e lo disegno
     	Singleton.getInstance().setCurrentGraph(g);
-    	Singleton.getInstance().drawingUtility.drawGraph(g);
     	
-    	Singleton.getInstance().logger.log("Il file \"" + filePath + "\" è stato caricato.");
+    	if (Singleton.getInstance().drawingUtility.drawGraph(g))
+    		Singleton.getInstance().logger.log("Il file \"" + filePath + "\" è stato caricato.");
 	}
 	
 	
@@ -179,10 +180,10 @@ public class MainController implements Initializable {
     	
     	RandomGraph<CoordinateNode> rg = new RandomGraph<CoordinateNode>();
     	
-    	Singleton.getInstance().drawingUtility.drawGraph(rg.getGraph());
-    	Singleton.getInstance().setCurrentGraph(rg.getGraph());
-    	
-    	Singleton.getInstance().logger.log("Grafo casuale caricato");
+    	if (Singleton.getInstance().drawingUtility.drawGraph(rg.getGraph())) {
+        	Singleton.getInstance().setCurrentGraph(rg.getGraph());
+        	Singleton.getInstance().logger.log("Grafo casuale caricato");
+    	}
     }
 	
 	
@@ -234,6 +235,8 @@ public class MainController implements Initializable {
     	s.setCurrentGraph(new Graph<CoordinateNode>());
     	graphPane.getChildren().clear();
     	
+    	Singleton.filePath = null;
+    	
     	this.vBoxParents.getChildren().clear();
     	this.vBoxVisited.getChildren().clear();
     	
@@ -272,7 +275,14 @@ public class MainController implements Initializable {
      */
     @FXML
     void handleMenuItem_Save(ActionEvent event) {
+    	if (Singleton.getInstance().getCurrentGraph() == null)
+    		return;
     	
+    	if (Singleton.filePath == null)
+    		this.handleMenuItem_SaveAs(event);
+    	else {
+    		this.save(Singleton.filePath, Singleton.getInstance().getCurrentGraph());
+    	}
     }
     
     
@@ -282,7 +292,37 @@ public class MainController implements Initializable {
 	 */
     @FXML
     void handleMenuItem_SaveAs(ActionEvent event) {
+    	if (Singleton.getInstance().getCurrentGraph() == null)
+    		return;
     	
+		FileChooser fc = new FileChooser();
+		this.configureFileChooser(fc);
+		
+		File file = fc.showSaveDialog(graphPane.getScene().getWindow());
+		
+		if (file != null)
+			this.save(file.getAbsolutePath(), Singleton.getInstance().getCurrentGraph());
+    }
+    
+    
+    /**
+     * Salva il grafo g su disco in formato .json utilizzando la classe apposita
+     * @param filePath percorso in cui salvare il file.
+     * @param g grafo sa salvare.
+     */
+    private void save(String filePath, Graph<CoordinateNode> g) {
+    	if (g == null)
+    		return;
+    	
+    	if (filePath != null) {
+			JSONFileWriter jsonWriter = new JSONFileWriter();
+			jsonWriter.writeFileWithJSONFileWriter(filePath, g);
+			
+			Singleton.getInstance().logger.log("File salvato nel percorso \""
+					+ filePath + "\"");
+			
+			Singleton.filePath = filePath;
+    	}
     }
     
     
