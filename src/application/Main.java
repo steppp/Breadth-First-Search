@@ -6,7 +6,6 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import model.graphs.Graph;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
@@ -28,7 +27,7 @@ public class Main extends Application {
 			// TODO: inserire l'icona dell'applicazione
 			
 			// rilascio tutte le risorse allocate prima della chiusura dell'applicazione
-			primaryStage.setOnCloseRequest(Main::performOnClosingCleanUp);
+			primaryStage.setOnCloseRequest(MainController::performCleanUp);
 			
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -43,7 +42,8 @@ public class Main extends Application {
 	}
 	
 	/**
-	 * Inizializzazione dei dati del Singleton
+	 * Inizializzazione dei dati del Singleton e dei gestori di eventi della finestra.
+	 * @param stage scena principale.
 	 */
 	private void initData(Stage stage) {
 		
@@ -80,30 +80,14 @@ public class Main extends Application {
 				handler = MainController::showPrefWindow;
 				handler.apply(event);
 				
+			case X:
+				handler = MainController::stop;
+				handler.apply(event);
+				break;
+				
 			default:
 				break;
 			}
 		});
-	}
-	
-	/**
-	 * Metodo che si preoccupa di rilasciare tutte le risorse allocate prima della chiusura dell'applicazione
-	 * @param we istanza dell'evento sulla finestra.
-	 */
-	private static void performOnClosingCleanUp(WindowEvent we) {
-		
-		Singleton.getInstance().logger.log("Goodbye!");	
-		System.out.println("Goodbye!");
-		
-		// annullo il timer per l'esecuzione animata dell'algoritmo
-		if (Singleton.getInstance().timer != null) {
-			Singleton.getInstance().timer.cancel();
-		}
-		
-		// termino il thread relativo all'esecuzione dell'algoritmo BFS
-		Thread t = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
-		if (t != null) {
-			t.interrupt();
-		}
 	}
 }

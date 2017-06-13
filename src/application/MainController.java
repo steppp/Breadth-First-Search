@@ -37,14 +37,17 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.graphs.Edge;
 import model.graphs.Graph;
 import model.graphs.Node;
 import model.node.visual.CoordinateNode;
+import model.randomGraph.RandomGraph;
 import singleton.Singleton;
 import utility.AnimationSettings;
 import utility.GraphDrawer;
 import utility.Logger;
+import model.JSONFiles.JSONFileReader;
 import model.arrow.Arrow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -147,16 +150,39 @@ public class MainController implements Initializable {
 		// il file che verrà scelto sarà salvato nella variabile file
 		File file = fc.showOpenDialog(graphPane.getScene().getWindow());
 		
-		// TODO: - Gestire l'apertura del file: "pulire" il grafo già esistente e validare il file appena aperto
-		String filePath = file.getAbsolutePath();
+		// se non è stato scelto alcun file termino il metodo
+		if (file == null) {
+			return;
+		}
 		
-		Singleton.getInstance().logger.log(filePath);
+		// pulisco la scena
+		this.handleMenuItem_Delete(null);
+		
+		String filePath = file.getAbsolutePath();
+
+		// carico il grafo dal file json
+    	JSONFileReader jsonReader = new JSONFileReader(filePath);
+    	Graph<CoordinateNode> g = jsonReader.readGraphFromJSONFilereader();
+    	
+    	// imposto il grafo come grafo corrente e lo disegno
+    	Singleton.getInstance().setCurrentGraph(g);
+    	Singleton.getInstance().drawingUtility.drawGraph(g);
+    	
+    	Singleton.getInstance().logger.log("Il file \"" + filePath + "\" è stato caricato.");
 	}
 	
 	
     @FXML
     void handleMenuItem_RandomGraph(ActionEvent event) {
-    	Singleton.getInstance().logger.log("Random graph");
+    	// pulisco la scena
+    	this.handleMenuItem_Delete(null);
+    	
+    	RandomGraph<CoordinateNode> rg = new RandomGraph<CoordinateNode>();
+    	
+    	Singleton.getInstance().drawingUtility.drawGraph(rg.getGraph());
+    	Singleton.getInstance().setCurrentGraph(rg.getGraph());
+    	
+    	Singleton.getInstance().logger.log("Grafo casuale caricato");
     }
 	
 	
@@ -166,9 +192,7 @@ public class MainController implements Initializable {
 	 */
 	private void configureFileChooser(final FileChooser fc) {
 		fc.setTitle("Open graph from json file");
-		fc.getExtensionFilters().addAll(
-				new FileChooser.ExtensionFilter("All files", "*.*"),
-				new FileChooser.ExtensionFilter("JSON", "*.json"));
+		fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
 	}
 
 
@@ -189,7 +213,7 @@ public class MainController implements Initializable {
 		Singleton.getInstance().drawingUtility = new GraphDrawer(this.graphPane);
 
 		// imposto lo stato iniziale dei menu
-		setMenuItemState(false);
+		setAnimationIsRunning(false);
 
 		scrollPaneParents.setFitToWidth(true);
 		scrollPaneVisited.setFitToWidth(true);
@@ -198,8 +222,13 @@ public class MainController implements Initializable {
 	
     @FXML
     private void handleMenuItem_Delete(ActionEvent event) {
+    	
+    	// fermo l'animazione
+    	MainController.stop(event);
+    	
     	Singleton s = Singleton.getInstance();
     	
+    	// pulisco tutto lo spazio di lavoro
     	s.animPrefs = new AnimationSettings();
     	s.currentNodeWithList = null;
     	s.setCurrentGraph(new Graph<CoordinateNode>());
@@ -224,9 +253,10 @@ public class MainController implements Initializable {
     	}
     }
     
-    // https://stackoverflow.com/questions/11468800/javafx2-closing-a-stage-substage-from-within-itself#comment21432693_11476162
     @FXML
     private void handleMenuItem_Close(ActionEvent event) {
+    	
+        // https://stackoverflow.com/questions/11468800/javafx2-closing-a-stage-substage-from-within-itself#comment21432693_11476162
     	Stage primaryStage = (Stage) this.graphPane.getScene().getWindow();
     	
     	// chiudo la finestra ma prima richiamo il gestore per l'evento di chiusura
@@ -262,16 +292,17 @@ public class MainController implements Initializable {
     }
     
     
-    // TODO: (FORSE NO) inserire metodo per eliminare un nodo graficamente
-    // TODO: (FORSE NO) inserire metodo per eliminare un vertice graficamente
-    
-    
     @FXML
     void handleMenuItem_AnimationSettings(ActionEvent event) {
     	MainController.showPrefWindow(event);
     }
     
     
+    /**
+     * Mostra la finestra per impostare le preferenze dell'animazione.
+     * @param e evento scatenante.
+     * @return Void.
+     */
     public static Void showPrefWindow(Event e) {
 
     	try {
@@ -291,20 +322,30 @@ public class MainController implements Initializable {
 
 	@FXML
     void handleMenuItem_Stop(ActionEvent event) {
+		MainController.stop(event);
+    }
+	
+	
+	/**
+	 * Arresta l'animazione preoccupandosi di ripristinare lo stato dell'applicazione a come era prima dell'esecuzione
+	 * dell'animazione
+	 * @param e evento scatenante.
+	 * @return Void.
+	 */
+	public static Void stop(Event e) {
     	Singleton.getInstance().currentNodeWithList = null;
-    	
-    	// interrompo il thread dell'animazione
-    	Thread bfs = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
-    	if (bfs != null && bfs.isAlive())
-    		// deprecato, ma non è stato possibile fare altrimenti
-    		bfs.interrupt();
-    	
-    	// resetto il colore originale del grafo
-    	resetGraphColor(this.graphPane, Color.BLACK);
+
+    	// elimina il thread ed il timer
+    	MainController.performCleanUp(null);
     	
     	// imposto i controlli indicando che l'animazione non sta proseguendo
-    	setMenuItemState(false);
-    }
+    	setAnimationIsRunning(false);
+    	
+    	// resetto il colore originale del grafo
+    	resetGraphColor(Singleton.getInstance().mainViewController.graphPane, Color.BLACK);
+    	
+    	return null;
+	}
 	
 	
     @FXML
@@ -387,7 +428,7 @@ public class MainController implements Initializable {
 			
 			// ripristino il colore del nodo precedente se esiste
 			if (s.currentNodeWithList != null)
-				paintNode(s.getCurrentGraph(), s.currentNodeWithList.getKey(), Color.GREEN);
+				paintNode(s.getCurrentGraph(), s.currentNodeWithList.getKey(), Color.LIMEGREEN);
 			
 			// coloro il nodo specificato
 			paintNode(s.getCurrentGraph(), currentNode, Color.CORAL);
@@ -403,7 +444,7 @@ public class MainController implements Initializable {
 		bfs.setExaminingEdge((edge) -> {
 			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.DARKGRAY);
 			
-			Singleton.getInstance().logger.log("Esamino l'arco tra il nodo con indice "
+			Singleton.getInstance().logger.log("?? Esamino l'arco tra il nodo con indice "
 					+ edge.getSource().getElement().getIndex()
 					+ " e quello con indice " + edge.getTarget().getElement().getIndex());
 			return null;
@@ -413,14 +454,14 @@ public class MainController implements Initializable {
 		bfs.setNodeInserted((edge) -> {
 			Singleton s = Singleton.getInstance();
 			
-			paintNode(s.getCurrentGraph(), edge.getTarget(), Color.GREEN);
+			paintNode(s.getCurrentGraph(), edge.getTarget(), Color.LIMEGREEN);
 			paintEdge(s.getCurrentGraph(), edge, Color.BLACK);
 			
 			// rimuovo gli elementi dalla lista di adiacenza della copia del nodo sorgente
 			// e, se una volta fatto ciò si svuota, coloro il nodo con il colore precedente
 			s.currentNodeWithList.getValue().remove(edge.getTarget());
 			if (s.currentNodeWithList.getValue().isEmpty())
-				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
+				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.LIMEGREEN);
 			
 			Singleton.getInstance().logger.log("++ Nodo con indice " + edge.getTarget().getElement().getIndex() + " inserito");
 			return null;
@@ -430,13 +471,13 @@ public class MainController implements Initializable {
 		bfs.setNodeNotInserted((edge) -> {
 			Singleton s = Singleton.getInstance();
 			
-			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getTarget(), Color.GREEN);
+			paintNode(Singleton.getInstance().getCurrentGraph(), edge.getTarget(), Color.LIMEGREEN);
 			paintEdge(Singleton.getInstance().getCurrentGraph(), edge, Color.DARKGRAY);
 			
 			// vedi metodo precedente
 			s.currentNodeWithList.getValue().remove(edge.getTarget());
 			if (s.currentNodeWithList.getValue().isEmpty())
-				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.GREEN);
+				paintNode(Singleton.getInstance().getCurrentGraph(), edge.getSource(), Color.LIMEGREEN);
 			
 			Singleton.getInstance().logger.log("-- Nodo con indice " + edge.getTarget().getElement().getIndex() + " non inserito");
 			return null;
@@ -450,10 +491,10 @@ public class MainController implements Initializable {
 		bfs.setFunctionEnded((Void) -> {
 			// ripristino il colore del nodo precedente se esiste
 			if (Singleton.getInstance().currentNodeWithList != null)
-				paintNode(Singleton.getInstance().getCurrentGraph(), Singleton.getInstance().currentNodeWithList.getKey(), Color.GREEN);
+				paintNode(Singleton.getInstance().getCurrentGraph(), Singleton.getInstance().currentNodeWithList.getKey(), Color.LIMEGREEN);
 			
-			Singleton.getInstance().logger.log("Animazione terminata!");
-			setMenuItemState(false);
+			Singleton.getInstance().logger.log("## Animazione terminata!");
+			setAnimationIsRunning(false);
 			
 			return null;
 		}); 
@@ -464,9 +505,12 @@ public class MainController implements Initializable {
 	 * Imposta lo stato dei controlli nel menu per eseguire l'algoritmo
 	 * @param animationIsRunning true se è in corso o sta per iniziare un'animazione, false altrimenti.
 	 */
-	private static void setMenuItemState(final Boolean animationIsRunning) {
+	private static void setAnimationIsRunning(final Boolean animationIsRunning) {
 		
-		Singleton.getInstance().isAnimating = animationIsRunning;
+		// imposto lo stato dell'animazione
+		Singleton.getInstance().isAnimating =
+				Singleton.getInstance().graphLoaded =
+				animationIsRunning;
 
 		// ottengo l'istanza del controller dal Singleton
 		MainController c = Singleton.getInstance().mainViewController;
@@ -508,6 +552,12 @@ public class MainController implements Initializable {
     }
     
     
+    /**
+     * Fa partire l'animazione se tutti i controlli hanno successo. Viene invocato sia nel caso l'animazione desiderata
+     * sia automatice sia passo-passo, discriminando i due casi.
+     * @param e evento scatenante.
+     * @return Void.
+     */
 	public static Void run(Event e) {
     	
     	Singleton s = Singleton.getInstance();
@@ -533,7 +583,7 @@ public class MainController implements Initializable {
     	// allora lo interrompo prima di avviare questo
     	Thread existingThread = s.getThreadByName(AnimationSettings.THREAD_NAME);
     	if (existingThread != null) {
-    		s.logger.log("Animazione interrotta");
+    		s.logger.log("## Animazione interrotta");
     		existingThread.interrupt();
     	}
     	
@@ -546,8 +596,19 @@ public class MainController implements Initializable {
     		stepByStep = ((KeyEvent) e).getCode() == KeyCode.S;
     	}
     	
+    	Singleton.getInstance().logger.log("## Animazione avviata, nodo radice: " + root.toString());
+    	
     	// imposto lo stato dei controlli
-    	setMenuItemState(true);
+    	setAnimationIsRunning(true);
+    	
+    	// rilascio le risorse utilizzate
+    	MainController.performCleanUp(null);
+    	
+    	// non c'è nessun nodo corrente
+    	s.currentNodeWithList = null;
+    	
+    	// resetto il colore originale del grafo
+    	resetGraphColor(s.mainViewController.graphPane, Color.BLACK);
 		
 		// creo l'oggetto GraphVisiter e setto il nome del thread 
 		GraphVisiter bfs = new GraphVisiter(currentGraph, root);
@@ -653,8 +714,8 @@ public class MainController implements Initializable {
     
     
     /**
-     * Visualizza sull'interfaccia il vettore dei nodi visitati.
-     * @param array array dei nodi visitati.
+     * Visualizza sull'interfaccia il vettore dei nodi visitati e padri.
+     * @param array array dei nodi visitati o padri.
      * @return Void
      */
     public static Void showVisited(final Object[] array) {
@@ -683,8 +744,8 @@ public class MainController implements Initializable {
     
     
     /**
-     * Crea le celle per visualizzare il vettore visited e le inizializza.
-     * @param array array che contiene le informazioni sui nodi visitati.
+     * Crea le celle per visualizzare i due vettori e le inizializza.
+     * @param array array che contiene le informazioni sui nodi visitati e padri.
      */
     private static void createCells(Object[] array) {
     	Singleton s = Singleton.getInstance();
@@ -710,6 +771,11 @@ public class MainController implements Initializable {
         	
         	HBox cell = new HBox();
         	cell.getStyleClass().add("scrollPaneCell");
+        	
+        	// se quello che sto esaminando è il nodo sorgente allora lo evidenzio
+        	if (s.animPrefs.getRoot().getElement().getIndex() == i) {
+        		cell.getStyleClass().add("rootNodeCell");
+        	}
     		
     		// incremento l'altezza del VBox
     		vBox.setPrefHeight(vBox.getHeight() + cellHeight);
@@ -723,6 +789,24 @@ public class MainController implements Initializable {
         	vBox.getChildren().add(cell);
     	}
     }
+	
+	/**
+	 * Metodo che si preoccupa di rilasciare tutte le risorse allocate prima della chiusura dell'applicazione
+	 * @param we istanza dell'evento sulla finestra.
+	 */
+	public static void performCleanUp(WindowEvent we) {
+		
+		// annullo il timer per l'esecuzione animata dell'algoritmo
+		if (Singleton.getInstance().timer != null) {
+			Singleton.getInstance().timer.cancel();
+		}
+		
+		// termino il thread relativo all'esecuzione dell'algoritmo BFS
+		Thread t = Singleton.getInstance().getThreadByName(AnimationSettings.THREAD_NAME);
+		if (t != null) {
+			t.interrupt();
+		}
+	}
 }
 
 
