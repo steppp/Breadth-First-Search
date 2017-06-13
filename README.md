@@ -1,10 +1,10 @@
 # Breadth-First Search Algorithm Visualization
 
-Programma scritto in Java per la visualizzazione dell'algoritmo di ricerca in ampiezza sui grafi. È possibile disegnare dei grafi **a piacimento**, oppure crearne alcuni in **modo casuale** e vedere come viene eseguito l'algoritmo [Breadth-First Search](https://it.wikipedia.org/wiki/Ricerca_in_ampiezza) sui grafi. È possibile anche **salvare** i grafi creati in un file *json*, per poi caricarli in un secondo momento. 
+Programma scritto in Java per la visualizzazione dell'algoritmo di ricerca in ampiezza sui grafi. È possibile disegnare dei grafi **a piacimento**, oppure crearne alcuni in **modo casuale** e vedere come viene eseguito l'algoritmo [Breadth-First Search](https://it.wikipedia.org/wiki/Ricerca_in_ampiezza) sui grafi. È possibile anche **salvare** i grafi creati in un file *json*, per poi caricarli in un secondo momento. Alcuni esempi di file *json* già pronti da utilizzare possono essere trovati in `/examples/`.
 
 Esempio di esecuzione del programma:
 
-![Animation gif](https://media.giphy.com/media/3oKIPqrZoFAfVzg22I/giphy.gif)
+![Animation gif](https://media.giphy.com/media/l4FGnSnmAUO50mbUk/giphy.gif)
 
 
 ## Funzionalità
@@ -36,7 +36,8 @@ Esempio di esecuzione del programma:
 6. si sbloccheranno altre due voci nel menu **Animazione**:
     * **Stop** per terminare l'animazione,
     * **Prossimo passo** per andare avanti di uno step;
-7. una volta terminata l'animazione è possibile ripeterla, sia con un grafo diverso che con lo stesso.
+7. sulla destra è possibile controllare il vettore dei **padri** e dei **nodi visitati** che vengono aggiornati ad ogni passo dell'animazione ed in cui il nodo radice è evidenziato con un colore arancione;
+8. una volta terminata l'animazione è possibile ripeterla, sia con un grafo diverso che con lo stesso.
 
 
 ## Come funziona l'animazione
@@ -59,6 +60,8 @@ In certi punti dell'algoritmo inoltre vengono effettuate delle chiamate a delle 
 `Ctrl + N`: effettua il prossimo passo
 
 `Ctrl + P`: apri il pannello di preferenze dell'animazione
+
+`Ctrl + X`: termina l'animazione
 
 
 #### Creato da:
