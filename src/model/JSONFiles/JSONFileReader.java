@@ -22,7 +22,7 @@ public class JSONFileReader {
 	String fileName ;
 	JSONParser parser;
 	
-	/*
+	/**
 	 * Costruttore.
 	 */
 	public JSONFileReader() {
@@ -31,9 +31,10 @@ public class JSONFileReader {
 		this.parser = new JSONParser() ;
 	}
 	
-	/*
+	/**
 	 * Costruttore:
 	 * memorizza il percorso del file da leggere, che deve essere passato come parametro.
+	 * @param filePath percorso del file .json da leggere
 	 */
 	public JSONFileReader(String filePath) {
 		
@@ -41,9 +42,13 @@ public class JSONFileReader {
 		this.parser = new JSONParser() ;
 	}
 	
-    /*
-     * Questo metodo ritorna il JSONObject contenuto nel file.
-     */
+    
+	/**
+   * Questo metodo ritorna il JSONObject contenuto nel file.
+	 * @return jsonObkect ottenuto dal file.
+	 * @throws WrongFileExtension se l'estensione non è corretta.
+	 * @throws EmptyFileName se il nome del file è vuoto.
+	 */
 	public JSONObject getFile () throws WrongFileExtension, EmptyFileName {
 		
 		if (!this.fileName.endsWith(".json")) {
@@ -83,10 +88,13 @@ public class JSONFileReader {
         return null ;
     }
 	
-	/*
+	/**
 	 * Questo metodo restituisce un grafo a partire da un JSONObject.
 	 * Solleva un'eccezione nel caso in cui l'oggetto non rispetti le regole sintattiche
 	 * notificate dal software.
+	 * @param object oggetto da decodificare.
+	 * @return grafo genereato dall'oggetto.
+	 * @throws InvalidFileObject se l'oggetto non rispetta le regole sintattiche previste.
 	 */
 	public Graph<CoordinateNode> readGraph(JSONObject object) throws InvalidFileObject {
 		
@@ -180,11 +188,10 @@ public class JSONFileReader {
 		return G ;
 	} 
 
-	/*
 	 * Questo è il metodo da invocare nel MainController.
 	 * Richiama tutti gli altri metodi facendo sì che venga restituito il 
 	 * Grafo contenuto nel file .json, gestendo tutti gli eventuali errori.
-	 */
+	 * @return grafo ottenuto dalla lettura del file.
 	public Graph<CoordinateNode> readGraphFromJSONFilereader(){
 		
      	try {
@@ -213,9 +220,10 @@ public class JSONFileReader {
      	return null ;
 	}
 
-	/*
+	/**
 	 * Questo metodo apre lo stream con il file di input, ne legge 
 	 * e copia il contenuto in una stringa che viene restituita dallo stesso.
+	 * @return stringa che rappresenta il contenuto del file letto
 	 */
 	public String getFileContent() {
 		

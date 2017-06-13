@@ -62,8 +62,14 @@ public class GraphDrawer {
 	/**
 	 * Disegna il grafo passato come parametro sul pannello attuale.
 	 * @param graph grafo da disegnare.
+	 * @return true se il grafo è stato disegnato, false altrimenti.
 	 */
-	public void drawGraph(Graph<CoordinateNode> graph) {
+	public boolean drawGraph(Graph<CoordinateNode> graph) {
+		if (graph == null) {
+			Singleton.getInstance().logger.log("Impossibile creare il grafo.");
+			return false;
+		}
+		
 		// disegno tutti i nodi
 		for (Node<CoordinateNode> node : graph.V()) {
 			this.drawNode(node);
@@ -75,6 +81,8 @@ public class GraphDrawer {
 				this.drawEdge(new Edge<CoordinateNode>(node, otherNode));
 			}
 		}
+		
+		return true;
 	}
 	
 	

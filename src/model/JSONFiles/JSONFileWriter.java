@@ -22,11 +22,15 @@ public class JSONFileWriter {
 	}
 	
 	
-	/*
+	/**
 	 * Costruttore.
 	 * Se passati come argomenti un percorso di un file con estensione .json
 	 * ed un grafo, questo scrive all'interno del file il grafo in formato .json .
 	 * Se il file non esiste, ne crea uno nuovo.
+	 * @param FilePath percorso del file .json su cui scrivere
+	 * @param G grafo attuale da convertire e scrivere su file
+	 * @throws WrongFileExtension
+	 * @throws EmptyFileName
 	 */
 	public JSONFileWriter(String FilePath, Graph<CoordinateNode> G) throws WrongFileExtension, EmptyFileName{
 		
@@ -52,8 +56,10 @@ public class JSONFileWriter {
 	}
 	
 	
-	/*
+	/**
 	 * Questo metodo converte il Grafo passato come parametro in un JSONObject.
+	 * @param G grafo da convertire in JSONObject
+	 * @return JSONObject corrispondente
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONObject toJSONObject (Graph<CoordinateNode> G) {
@@ -72,8 +78,9 @@ public class JSONFileWriter {
 			
 			JSONObject nodeObj = new JSONObject() ;
 			
-			nodeObj.put("x", node.getElement().getxPos()) ;
-			nodeObj.put("y", node.getElement().getyPos()) ;
+			nodeObj.put("x", (int) node.getElement().getxPos()) ;
+			nodeObj.put("y", (int) node.getElement().getyPos()) ;
+
 			
 			verticesListObj.put(Integer.toString(node.getElement().getIndex()), nodeObj) ;
 			
@@ -100,8 +107,10 @@ public class JSONFileWriter {
 	}
 	
 	
-	/*
+	/**
 	 * Questo metodo scrive sul file un oggetto di tipo JSON passato come parametro.
+	 * @param obj JSONObject da scrivere su file
+	 * @throws IOException
 	 */
 	public void writeFile(JSONObject obj) throws IOException {
 		
@@ -120,8 +129,10 @@ public class JSONFileWriter {
 	}
 	
 	
-	/*
+	/**
 	 * Metodo principale da richiamare per scrivere su file .json
+	 * @param FilePath percorso del file .json 
+	 * @param G grafo da scrivere
 	 */
 	public void writeFileWithJSONFileWriter(String FilePath, Graph<CoordinateNode> G) {
         
