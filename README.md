@@ -24,7 +24,7 @@ Esempio di esecuzione del programma:
 1. Avviare il programma tramite bfs-alga.jar;
 2. creare un grafo in uno dei seguenti modi:
     * creando i vertici e gli archi con il mouse,
-    * andando su **File > Casuale..** per generarne uno in modo casuale,
+    * andando su **File > Grafo casuale..** per generarne uno in modo casuale scegliendo il numero di nodi,
     * andando su **File > Apri..** per aprirne uno da file;
 3. modificare il grafo finché non si ottiene il risultato desiderato;
 4. cliccare su **Animazione > Impostazioni** e:
