@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -89,6 +90,9 @@
                            <content>
                               <VBox fx:id="vBoxVisited" prefHeight="0.0" prefWidth="100.0" />
                            </content>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
                         </ScrollPane>
                         <ScrollPane fx:id="scrollPaneParents" layoutX="155.0" layoutY="72.0" prefHeight="380.0" prefWidth="100.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="71.0">
                            <content>

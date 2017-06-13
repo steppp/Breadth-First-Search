@@ -253,9 +253,10 @@ public class MainController implements Initializable {
     	}
     }
     
-    // https://stackoverflow.com/questions/11468800/javafx2-closing-a-stage-substage-from-within-itself#comment21432693_11476162
     @FXML
     private void handleMenuItem_Close(ActionEvent event) {
+    	
+        // https://stackoverflow.com/questions/11468800/javafx2-closing-a-stage-substage-from-within-itself#comment21432693_11476162
     	Stage primaryStage = (Stage) this.graphPane.getScene().getWindow();
     	
     	// chiudo la finestra ma prima richiamo il gestore per l'evento di chiusura
@@ -291,16 +292,17 @@ public class MainController implements Initializable {
     }
     
     
-    // TODO: (FORSE NO) inserire metodo per eliminare un nodo graficamente
-    // TODO: (FORSE NO) inserire metodo per eliminare un vertice graficamente
-    
-    
     @FXML
     void handleMenuItem_AnimationSettings(ActionEvent event) {
     	MainController.showPrefWindow(event);
     }
     
     
+    /**
+     * Mostra la finestra per impostare le preferenze dell'animazione.
+     * @param e evento scatenante.
+     * @return Void.
+     */
     public static Void showPrefWindow(Event e) {
 
     	try {
@@ -324,6 +326,12 @@ public class MainController implements Initializable {
     }
 	
 	
+	/**
+	 * Arresta l'animazione preoccupandosi di ripristinare lo stato dell'applicazione a come era prima dell'esecuzione
+	 * dell'animazione
+	 * @param e evento scatenante.
+	 * @return Void.
+	 */
 	public static Void stop(Event e) {
     	Singleton.getInstance().currentNodeWithList = null;
 
@@ -544,6 +552,12 @@ public class MainController implements Initializable {
     }
     
     
+    /**
+     * Fa partire l'animazione se tutti i controlli hanno successo. Viene invocato sia nel caso l'animazione desiderata
+     * sia automatice sia passo-passo, discriminando i due casi.
+     * @param e evento scatenante.
+     * @return Void.
+     */
 	public static Void run(Event e) {
     	
     	Singleton s = Singleton.getInstance();
@@ -700,8 +714,8 @@ public class MainController implements Initializable {
     
     
     /**
-     * Visualizza sull'interfaccia il vettore dei nodi visitati.
-     * @param array array dei nodi visitati.
+     * Visualizza sull'interfaccia il vettore dei nodi visitati e padri.
+     * @param array array dei nodi visitati o padri.
      * @return Void
      */
     public static Void showVisited(final Object[] array) {
@@ -730,8 +744,8 @@ public class MainController implements Initializable {
     
     
     /**
-     * Crea le celle per visualizzare il vettore visited e le inizializza.
-     * @param array array che contiene le informazioni sui nodi visitati.
+     * Crea le celle per visualizzare i due vettori e le inizializza.
+     * @param array array che contiene le informazioni sui nodi visitati e padri.
      */
     private static void createCells(Object[] array) {
     	Singleton s = Singleton.getInstance();

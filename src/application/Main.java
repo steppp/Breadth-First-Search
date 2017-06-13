@@ -6,7 +6,6 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import model.graphs.Graph;
 import model.node.visual.CoordinateNode;
 import singleton.Singleton;
@@ -43,7 +42,8 @@ public class Main extends Application {
 	}
 	
 	/**
-	 * Inizializzazione dei dati del Singleton
+	 * Inizializzazione dei dati del Singleton e dei gestori di eventi della finestra.
+	 * @param stage scena principale.
 	 */
 	private void initData(Stage stage) {
 		
