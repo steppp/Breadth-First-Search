@@ -22,7 +22,7 @@ public class JSONFileReader {
 	String fileName ;
 	JSONParser parser;
 	
-	/*
+	/**
 	 * Costruttore.
 	 */
 	public JSONFileReader() {
@@ -31,9 +31,10 @@ public class JSONFileReader {
 		this.parser = new JSONParser() ;
 	}
 	
-	/*
+	/**
 	 * Costruttore:
 	 * memorizza il percorso del file da leggere, che deve essere passato come parametro.
+	 * @param filePath percorso del file .json da leggere
 	 */
 	public JSONFileReader(String filePath) {
 		
@@ -41,8 +42,11 @@ public class JSONFileReader {
 		this.parser = new JSONParser() ;
 	}
 	
-    /*
+    /**
      * Questo metodo ritorna il JSONObject contenuto nel file.
+     * @return JSONObject letto nel file
+     * @throws WrongFileExtension
+     * @throws EmptyFileName
      */
 	public JSONObject getFile () throws WrongFileExtension, EmptyFileName {
 		
@@ -83,10 +87,13 @@ public class JSONFileReader {
         return null ;
     }
 	
-	/*
+	/**
 	 * Questo metodo restituisce un grafo a partire da un JSONObject.
 	 * Solleva un'eccezione nel caso in cui l'oggetto non rispetti le regole sintattiche
 	 * notificate dal software.
+	 * @param object rappresenta un grafo in notazione .json
+	 * @return grafo letto dal file
+	 * @throws InvalidFileObject
 	 */
 	public Graph<CoordinateNode> readGraph(JSONObject object) throws InvalidFileObject {
 		
@@ -180,10 +187,10 @@ public class JSONFileReader {
 		return G ;
 	} 
 
-	/*
-	 * Questo è il metodo da invocare nel MainController.
-	 * Richiama tutti gli altri metodi facendo sì che venga restituito il 
+	/**
+	 * Questo metodo richiama tutti gli altri facendo sì che venga restituito il 
 	 * Grafo contenuto nel file .json, gestendo tutti gli eventuali errori.
+	 * @return grafo definitivo
 	 */
 	public Graph<CoordinateNode> readGraphFromJSONFilereader(){
 		
@@ -213,9 +220,10 @@ public class JSONFileReader {
      	return null ;
 	}
 
-	/*
+	/**
 	 * Questo metodo apre lo stream con il file di input, ne legge 
 	 * e copia il contenuto in una stringa che viene restituita dallo stesso.
+	 * @return stringa che rappresenta il contenuto del file letto
 	 */
 	public String getFileContent() {
 		
