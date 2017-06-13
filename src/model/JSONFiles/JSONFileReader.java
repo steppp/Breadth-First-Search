@@ -23,7 +23,7 @@ public class JSONFileReader {
 	JSONParser parser;
 	
 	/**
-	 * Inizializza i campi.
+	 * Costruttore.
 	 */
 	public JSONFileReader() {
 		
@@ -34,7 +34,7 @@ public class JSONFileReader {
 	/**
 	 * Costruttore:
 	 * memorizza il percorso del file da leggere, che deve essere passato come parametro.
-	 * @param filePath percorso del file da leggere.
+	 * @param filePath percorso del file .json da leggere
 	 */
 	public JSONFileReader(String filePath) {
 		
@@ -44,7 +44,7 @@ public class JSONFileReader {
 	
     
 	/**
-     * Questo metodo ritorna il JSONObject contenuto nel file.
+   * Questo metodo ritorna il JSONObject contenuto nel file.
 	 * @return jsonObkect ottenuto dal file.
 	 * @throws WrongFileExtension se l'estensione non è corretta.
 	 * @throws EmptyFileName se il nome del file è vuoto.
@@ -88,7 +88,6 @@ public class JSONFileReader {
         return null ;
     }
 	
-
 	/**
 	 * Questo metodo restituisce un grafo a partire da un JSONObject.
 	 * Solleva un'eccezione nel caso in cui l'oggetto non rispetti le regole sintattiche
@@ -189,12 +188,10 @@ public class JSONFileReader {
 		return G ;
 	} 
 
-	/**
 	 * Questo è il metodo da invocare nel MainController.
 	 * Richiama tutti gli altri metodi facendo sì che venga restituito il 
 	 * Grafo contenuto nel file .json, gestendo tutti gli eventuali errori.
 	 * @return grafo ottenuto dalla lettura del file.
-	 */
 	public Graph<CoordinateNode> readGraphFromJSONFilereader(){
 		
      	try {
@@ -226,7 +223,7 @@ public class JSONFileReader {
 	/**
 	 * Questo metodo apre lo stream con il file di input, ne legge 
 	 * e copia il contenuto in una stringa che viene restituita dallo stesso.
-	 * @return contenuto del file.
+	 * @return stringa che rappresenta il contenuto del file letto
 	 */
 	public String getFileContent() {
 		
